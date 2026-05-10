@@ -15,10 +15,18 @@ export class PostgresUserRepository extends UserRepository {
     return null;
   }
 
-  async create({ email, password }: UserData): Promise<User> {
+  async findById(id: string): Promise<User | null> {
+    const res = await this.pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    if (res.rows[0]) {
+      return new User(res.rows[0]);
+    }
+    return null;
+  }
+
+  async create({ id, email }: UserData): Promise<User> {
     const res = await this.pool.query(
-      'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email',
-      [email, password]
+      'INSERT INTO users (id, email) VALUES ($1, $2) RETURNING id, email',
+      [id, email]
     );
     return new User(res.rows[0]);
   }

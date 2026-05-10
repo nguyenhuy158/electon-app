@@ -1,8 +1,6 @@
 import { AuthUseCase } from '../src/application/use-cases/AuthUseCase';
 import { UserRepository } from '../src/application/ports/UserRepository';
-import * as bcrypt from 'bcryptjs';
-
-jest.mock('bcryptjs');
+import { User } from '../src/domain/models/User';
 
 describe('AuthUseCase', () => {
   let mockRepo: jest.Mocked<UserRepository>;
@@ -10,70 +8,82 @@ describe('AuthUseCase', () => {
 
   beforeEach(() => {
     mockRepo = {
-      create: jest.fn(),
       findByEmail: jest.fn(),
+      findById: jest.fn(),
+      create: jest.fn(),
     } as any;
+    
+    process.env.NEON_AUTH_URL = 'https://test.neonauth.us-east-2.aws.neon.build/neondb/auth';
     useCase = new AuthUseCase(mockRepo);
-    jest.clearAllMocks();
+    
+    // Inject mock client directly to avoid real network calls or SDK logic
+    (useCase as any).client = {
+      signUp: {
+        email: jest.fn()
+      },
+      signIn: {
+        email: jest.fn()
+      }
+    };
   });
 
-  test('register should hash password and save user', async () => {
-    (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_pass');
-    mockRepo.create.mockResolvedValue({ id: 1, email: 'test@test.com' } as any);
+  describe('register', () => {
+    it('should register and sync user to local DB', async () => {
+      const neonUser = { id: 'neon_id', email: 'test@example.com' };
+      ((useCase as any).client.signUp.email as jest.Mock).mockResolvedValue({
+        data: { user: neonUser },
+        error: null
+      });
+      mockRepo.create.mockResolvedValue(new User(neonUser));
 
-    const result = await useCase.register('test@test.com', 'pass123');
+      const result = await useCase.register('test@example.com', 'pass123');
 
-    expect(bcrypt.hash).toHaveBeenCalledWith('pass123', 10);
-    expect(mockRepo.create).toHaveBeenCalledWith({
-      email: 'test@test.com',
-      password: 'hashed_pass',
+      expect(result.success).toBe(true);
+      expect(mockRepo.create).toHaveBeenCalledWith({ id: 'neon_id', email: 'test@example.com' });
     });
-    expect(result.success).toBe(true);
+
+    it('should return error if registration fails', async () => {
+      ((useCase as any).client.signUp.email as jest.Mock).mockResolvedValue({
+        data: null,
+        error: { message: 'Email already exists' }
+      });
+
+      const result = await useCase.register('test@example.com', 'pass123');
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Email already exists');
+    });
   });
 
-  test('register should return error on failure', async () => {
-    (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_pass');
-    mockRepo.create.mockRejectedValue(new Error('DB Error'));
+  describe('login', () => {
+    it('should login and sync user if not in local DB', async () => {
+      const neonUser = { id: 'neon_id', email: 'test@example.com' };
+      ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
+        data: { user: neonUser },
+        error: null
+      });
+      mockRepo.findById.mockResolvedValue(null);
+      mockRepo.create.mockResolvedValue(new User(neonUser));
 
-    const result = await useCase.register('test@test.com', 'pass123');
-    expect(result.success).toBe(false);
-    expect(result.error).toBe('DB Error');
-  });
+      const result = await useCase.login('test@example.com', 'pass123');
 
-  test('login should return user on success', async () => {
-    mockRepo.findByEmail.mockResolvedValue({
-      id: 1,
-      email: 'test@test.com',
-      password: 'hashed_pass',
-    } as any);
-    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      expect(result.success).toBe(true);
+      expect(mockRepo.findById).toHaveBeenCalledWith('neon_id');
+      expect(mockRepo.create).toHaveBeenCalled();
+    });
 
-    const result = await useCase.login('test@test.com', 'pass123');
+    it('should login and use existing local user', async () => {
+      const neonUser = { id: 'neon_id', email: 'test@example.com' };
+      ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
+        data: { user: neonUser },
+        error: null
+      });
+      mockRepo.findById.mockResolvedValue(new User(neonUser));
 
-    expect(result.success).toBe(true);
-    expect(result.user?.email).toBe('test@test.com');
-  });
+      const result = await useCase.login('test@example.com', 'pass123');
 
-  test('login should return error on invalid credentials', async () => {
-    mockRepo.findByEmail.mockResolvedValue(null);
-
-    const result = await useCase.login('test@test.com', 'pass123');
-    expect(result.success).toBe(false);
-    expect(result.error).toBe('Invalid credentials');
-  });
-
-  test('login should return error if password mismatch', async () => {
-    mockRepo.findByEmail.mockResolvedValue({ password: 'hashed' } as any);
-    (bcrypt.compare as jest.Mock).mockResolvedValue(false);
-
-    const result = await useCase.login('test@test.com', 'pass123');
-    expect(result.success).toBe(false);
-  });
-
-  test('login should return error on repository exception', async () => {
-    mockRepo.findByEmail.mockRejectedValue(new Error('Fatal'));
-    const result = await useCase.login('test@test.com', 'pass');
-    expect(result.success).toBe(false);
-    expect(result.error).toBe('Fatal');
+      expect(result.success).toBe(true);
+      expect(mockRepo.create).not.toHaveBeenCalled();
+    });
   });
 });

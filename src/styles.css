@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #201d1d;
+  --color-on-primary: #fdfcfc;
+  --color-ink: #201d1d;
+  --color-ink-deep: #0f0000;
+  --color-charcoal: #302c2c;
+  --color-body: #424245;
+  --color-mute: #646262;
+  --color-stone: #6e6e73;
+  --color-ash: #9a9898;
+  --color-canvas: #fdfcfc;
+  --color-surface-soft: #f8f7f7;
+  --color-surface-card: #f1eeee;
+  --color-surface-dark: #201d1d;
+  --color-surface-dark-elevated: #302c2c;
+  --color-hairline: rgba(15, 0, 0, 0.12);
+  --color-hairline-strong: #646262;
+  --color-on-dark: #fdfcfc;
+  --color-on-dark-mute: #9a9898;
+  --color-accent: #007aff;
+  --color-warning: #ff9f0a;
+  --color-danger: #ff3b30;
+  --color-success: #30d158;
+
+  --font-mono: "Berkeley Mono", "monospace";
+
+  --radius-sm: 4px;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
+  --spacing-section: 96px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-ink-deep);
+  }
+  
+  .input-field {
+    width: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    background-color: var(--color-surface-soft);
+    border-width: 1px;
+    border-color: var(--color-hairline);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    color: var(--color-ink);
+  }
+  .input-field:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    background-color: var(--color-canvas);
+    border-color: var(--color-ink);
+  }
+
+  .card-container {
+    background-color: var(--color-canvas);
+    padding: 24px;
+    border-width: 1px;
+    border-color: var(--color-hairline);
+    border-radius: var(--radius-sm);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ascii-banner {
+    text-align: center;
+    font-size: 10px;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    white-space: pre;
+  }
+}

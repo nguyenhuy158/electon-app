@@ -14,11 +14,11 @@ export class PostgresClipboardRepository extends ClipboardRepository {
     ]);
   }
 
-  async getRecent(userId: string | number, limit: number): Promise<Clip[]> {
+  async getRecent(userId: string, limit: number): Promise<Clip[]> {
     const res = await this.pool.query(
       'SELECT content FROM clips WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2',
       [userId, limit]
     );
-    return res.rows.map((r: any) => new Clip({ userId, content: r.content }));
+    return res.rows.map((r: any) => new Clip({ userId: userId as string, content: r.content }));
   }
 }

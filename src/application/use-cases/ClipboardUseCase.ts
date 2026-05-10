@@ -3,6 +3,8 @@ import { ClipboardService } from '../ports/ClipboardService';
 import { NotificationService } from '../ports/NotificationService';
 import { Clip } from '../../domain/models/Clip';
 import { User } from '../../domain/models/User';
+import { APP_CONSTANTS } from '../../domain/constants';
+import { i18n } from '../../domain/i18n';
 
 export class ClipboardUseCase {
   private clipHistory: string[] = [];
@@ -12,7 +14,7 @@ export class ClipboardUseCase {
     private clipboardRepository: ClipboardRepository,
     private clipboardService: ClipboardService,
     private notificationService: NotificationService,
-    private historyLimit: number = 10
+    private historyLimit: number = APP_CONSTANTS.CLIPBOARD.DEFAULT_HISTORY_LIMIT
   ) {}
 
   setCurrentUser(user: User | null) {
@@ -43,10 +45,13 @@ export class ClipboardUseCase {
 
   copyToClipboard(text: string) {
     this.clipboardService.writeText(text);
-    this.notificationService.notify('Copied', 'Item copied to clipboard');
+    this.notificationService.notify(
+      i18n.NOTIFICATIONS.COPIED_TITLE,
+      i18n.NOTIFICATIONS.COPIED_BODY
+    );
   }
 
-  async loadCloudHistory(userId: string | number) {
+  async loadCloudHistory(userId: string) {
     if (this.clipboardRepository) {
       const history = await this.clipboardRepository.getRecent(userId, this.historyLimit);
       this.clipHistory = history.map(h => h.content);
