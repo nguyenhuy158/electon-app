@@ -19,12 +19,12 @@
       }
 
       /* Hide number input spinners */
-      input[type=number]::-webkit-inner-spin-button, 
-      input[type=number]::-webkit-outer-spin-button { 
-        -webkit-appearance: none; 
-        margin: 0; 
+      input[type='number']::-webkit-inner-spin-button,
+      input[type='number']::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
       }
-      
+
       .settings-input {
         background-color: var(--color-canvas);
         border: 1px solid var(--color-hairline);
@@ -35,12 +35,12 @@
         transition: all 0.2s ease;
         outline: none;
       }
-      
+
       .settings-input:focus {
         border-color: var(--color-accent);
         box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.1);
       }
-      
+
       .settings-select {
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
@@ -52,28 +52,70 @@
   </head>
   <body class="h-screen flex flex-col overflow-hidden bg-canvas text-body font-sans select-none">
     <!-- Header (Drag region) -->
-    <header class="flex items-center justify-between px-6 py-4 bg-canvas/80 backdrop-blur-md sticky top-0 z-20 border-b border-hairline shrink-0 pywebview-drag-region cursor-default">
+    <header
+      class="flex items-center justify-between px-6 py-4 bg-canvas/80 backdrop-blur-md sticky top-0 z-20 border-b border-hairline shrink-0 pywebview-drag-region cursor-default"
+    >
       <div class="flex items-center gap-2 pointer-events-none">
         <div class="w-6 h-6 bg-accent rounded-md flex items-center justify-center text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+            ></path>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+          </svg>
         </div>
         <h1 class="text-sm font-semibold tracking-tight" data-i18n="APP.NAME">QuickClip</h1>
       </div>
-      
+
       <div class="flex items-center gap-1">
         <button
           id="minimize-btn"
           class="p-2 hover:bg-surface-soft rounded-full transition-all cursor-pointer text-mute hover:text-accent"
           title="Minimize"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
         </button>
         <button
           id="quit-btn"
           class="p-2 hover:bg-surface-soft rounded-full transition-all cursor-pointer text-mute hover:text-danger"
           title="Quit"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
         <button
           id="help-toggle"
@@ -81,7 +123,21 @@
           data-i18n-title="HELP.TITLE"
           title="Help"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
         </button>
         <button
           id="settings-toggle"
@@ -89,7 +145,22 @@
           data-i18n-title="SETTINGS.TITLE"
           title="Settings"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+            ></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
         </button>
       </div>
     </header>
@@ -99,7 +170,20 @@
       <div id="history-view" class="flex flex-col h-full p-4">
         <div class="relative mb-4 shrink-0">
           <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-mute">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
           </div>
           <input
             type="text"
@@ -115,45 +199,101 @@
       <!-- Settings View -->
       <div id="settings-view" class="hidden absolute inset-0 bg-canvas z-10 flex flex-col p-6">
         <div class="flex items-center gap-3 mb-8">
-          <button id="settings-back" class="p-2 hover:bg-surface-soft rounded-full transition-colors cursor-pointer text-mute">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <button
+            id="settings-back"
+            class="p-2 hover:bg-surface-soft rounded-full transition-colors cursor-pointer text-mute"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
           </button>
           <h2 class="text-lg font-semibold" data-i18n="SETTINGS.TITLE">Settings</h2>
         </div>
-        
+
         <div class="space-y-6 overflow-y-auto pr-2 custom-scrollbar">
           <section class="space-y-3">
-            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1" data-i18n="SETTINGS.ACCOUNT">Account</h3>
+            <h3
+              class="text-[11px] font-bold uppercase text-mute tracking-wider px-1"
+              data-i18n="SETTINGS.ACCOUNT"
+            >
+              Account
+            </h3>
             <div class="bg-surface-soft p-4 rounded-xl border border-hairline">
               <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 bg-canvas rounded-full flex items-center justify-center border border-hairline text-mute">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <div
+                  class="w-10 h-10 bg-canvas rounded-full flex items-center justify-center border border-hairline text-mute"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
                 </div>
                 <div>
-                  <p class="text-sm font-semibold" id="user-email" data-i18n="AUTH.GUEST_USER">Guest User</p>
-                  <p class="text-xs text-mute" id="sync-status" data-i18n="AUTH.SYNC_OFFLINE">Local storage only</p>
+                  <p class="text-sm font-semibold" id="user-email" data-i18n="AUTH.GUEST_USER">
+                    Guest User
+                  </p>
+                  <p class="text-xs text-mute" id="sync-status" data-i18n="AUTH.SYNC_OFFLINE">
+                    Local storage only
+                  </p>
                 </div>
               </div>
-              <button id="auth-trigger-btn" class="btn-primary w-full shadow-sm" data-i18n="AUTH.SIGN_IN_TO_SYNC">
+              <button
+                id="auth-trigger-btn"
+                class="btn-primary w-full shadow-sm"
+                data-i18n="AUTH.SIGN_IN_TO_SYNC"
+              >
                 Sign In to Sync
               </button>
-              <button id="logout-btn" class="btn-primary w-full hidden bg-white !text-danger border border-danger/20 hover:bg-danger/5" data-i18n="AUTH.SIGN_OUT">
+              <button
+                id="logout-btn"
+                class="btn-primary w-full hidden bg-white !text-danger border border-danger/20 hover:bg-danger/5"
+                data-i18n="AUTH.SIGN_OUT"
+              >
                 Sign Out
               </button>
             </div>
           </section>
 
           <section class="space-y-3">
-            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1">Synchronization</h3>
+            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1">
+              Synchronization
+            </h3>
             <div class="bg-surface-soft p-4 rounded-xl border border-hairline space-y-4">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium" data-i18n="SETTINGS.AUTO_SYNC">Auto-sync</span>
                 <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" id="sync-toggle" class="sr-only peer">
-                  <div class="w-11 h-6 bg-canvas border border-hairline peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-mute after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent peer-checked:after:bg-white"></div>
+                  <input type="checkbox" id="sync-toggle" class="sr-only peer" />
+                  <div
+                    class="w-11 h-6 bg-canvas border border-hairline peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-mute after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent peer-checked:after:bg-white"
+                  ></div>
                 </label>
               </div>
-              <button id="force-sync-btn" class="btn-primary w-full shadow-sm" data-i18n="SETTINGS.FORCE_SYNC">
+              <button
+                id="force-sync-btn"
+                class="btn-primary w-full shadow-sm"
+                data-i18n="SETTINGS.FORCE_SYNC"
+              >
                 Sync Now
               </button>
               <p id="last-sync-time" class="text-[10px] text-mute text-center px-1"></p>
@@ -161,66 +301,120 @@
           </section>
 
           <section class="space-y-3">
-            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1" data-i18n="SETTINGS.GLOBAL_SHORTCUT">Global Shortcut</h3>
+            <h3
+              class="text-[11px] font-bold uppercase text-mute tracking-wider px-1"
+              data-i18n="SETTINGS.GLOBAL_SHORTCUT"
+            >
+              Global Shortcut
+            </h3>
             <div class="space-y-3">
               <div>
                 <label class="text-[10px] text-mute px-1 mb-1 block">Open Picker</label>
                 <div class="flex gap-2">
-                  <input type="text" id="shortcut-input" class="input-field !m-0" data-i18n-placeholder="SETTINGS.SHORTCUT_PLACEHOLDER" placeholder="e.g. Cmd+Shift+V" />
+                  <input
+                    type="text"
+                    id="shortcut-input"
+                    class="input-field !m-0"
+                    data-i18n-placeholder="SETTINGS.SHORTCUT_PLACEHOLDER"
+                    placeholder="e.g. Cmd+Shift+V"
+                  />
                 </div>
               </div>
               <div>
                 <label class="text-[10px] text-mute px-1 mb-1 block">Toggle Pin (In-app)</label>
                 <div class="flex gap-2">
-                  <input type="text" id="pin-shortcut-input" class="input-field !m-0" placeholder="e.g. Ctrl+Enter" />
+                  <input
+                    type="text"
+                    id="pin-shortcut-input"
+                    class="input-field !m-0"
+                    placeholder="e.g. Ctrl+Enter"
+                  />
                 </div>
               </div>
-              <button id="save-shortcut-btn" class="btn-primary w-full mt-2 shadow-sm" data-i18n="SETTINGS.SAVE">Save Shortcuts</button>
+              <button
+                id="save-shortcut-btn"
+                class="btn-primary w-full mt-2 shadow-sm"
+                data-i18n="SETTINGS.SAVE"
+              >
+                Save Shortcuts
+              </button>
             </div>
             <p id="shortcut-status" class="text-[11px] h-4 px-1"></p>
           </section>
 
           <section class="space-y-3">
-            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1" data-i18n="SETTINGS.CLEANUP">Auto-cleanup</h3>
+            <h3
+              class="text-[11px] font-bold uppercase text-mute tracking-wider px-1"
+              data-i18n="SETTINGS.CLEANUP"
+            >
+              Auto-cleanup
+            </h3>
             <div class="bg-surface-soft p-4 rounded-xl border border-hairline space-y-4">
               <div class="flex items-center justify-between">
-                <span class="text-sm font-medium" data-i18n="SETTINGS.CLEANUP_STRATEGY">Cleanup by</span>
+                <span class="text-sm font-medium" data-i18n="SETTINGS.CLEANUP_STRATEGY">
+                  Cleanup by
+                </span>
                 <select id="cleanup-strategy" class="settings-input settings-select min-w-[140px]">
                   <option value="limit" data-i18n="SETTINGS.STRATEGY_LIMIT">Maximum items</option>
                   <option value="days" data-i18n="SETTINGS.STRATEGY_DAYS">Days old</option>
                 </select>
               </div>
               <div class="flex items-center justify-between border-t border-hairline/50 pt-4">
-                <span class="text-sm font-medium" data-i18n="SETTINGS.CLEANUP_VALUE">Keep amount</span>
-                <input type="number" id="cleanup-value" class="settings-input w-20 text-right font-mono" min="1" />
+                <span class="text-sm font-medium" data-i18n="SETTINGS.CLEANUP_VALUE">
+                  Keep amount
+                </span>
+                <input
+                  type="number"
+                  id="cleanup-value"
+                  class="settings-input w-20 text-right font-mono"
+                  min="1"
+                />
               </div>
             </div>
           </section>
 
           <section class="space-y-3">
-            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1" data-i18n="SETTINGS.SOUND_EFFECTS">Sound Effects</h3>
-            <div class="flex items-center justify-between bg-surface-soft p-4 rounded-xl border border-hairline">
+            <h3
+              class="text-[11px] font-bold uppercase text-mute tracking-wider px-1"
+              data-i18n="SETTINGS.SOUND_EFFECTS"
+            >
+              Sound Effects
+            </h3>
+            <div
+              class="flex items-center justify-between bg-surface-soft p-4 rounded-xl border border-hairline"
+            >
               <span class="text-sm" data-i18n="SETTINGS.ENABLE_SOUND">Enable sound effects</span>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="sound-toggle" class="sr-only peer">
-                <div class="w-11 h-6 bg-canvas border border-hairline peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-mute after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent peer-checked:after:bg-white"></div>
+                <input type="checkbox" id="sound-toggle" class="sr-only peer" />
+                <div
+                  class="w-11 h-6 bg-canvas border border-hairline peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-mute after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent peer-checked:after:bg-white"
+                ></div>
               </label>
             </div>
           </section>
 
           <section class="space-y-3">
             <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1">Display</h3>
-            <div class="flex items-center justify-between bg-surface-soft p-4 rounded-xl border border-hairline">
+            <div
+              class="flex items-center justify-between bg-surface-soft p-4 rounded-xl border border-hairline"
+            >
               <span class="text-sm">Show detailed stats (chars/words)</span>
               <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="stats-toggle" class="sr-only peer">
-                <div class="w-11 h-6 bg-canvas border border-hairline peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-mute after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent peer-checked:after:bg-white"></div>
+                <input type="checkbox" id="stats-toggle" class="sr-only peer" />
+                <div
+                  class="w-11 h-6 bg-canvas border border-hairline peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-mute after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent peer-checked:after:bg-white"
+                ></div>
               </label>
             </div>
           </section>
 
           <section class="space-y-3">
-            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1" data-i18n="SETTINGS.APPEARANCE">Appearance</h3>
+            <h3
+              class="text-[11px] font-bold uppercase text-mute tracking-wider px-1"
+              data-i18n="SETTINGS.APPEARANCE"
+            >
+              Appearance
+            </h3>
             <div class="bg-surface-soft p-4 rounded-xl border border-hairline">
               <div class="flex items-center justify-between">
                 <span class="text-sm" data-i18n="SETTINGS.APPEARANCE">Theme</span>
@@ -234,23 +428,44 @@
           </section>
 
           <section class="pt-4 border-t border-hairline">
-            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-3" data-i18n="SETTINGS.KEYBOARD_SHORTCUTS">Keyboard Shortcuts</h3>
+            <h3
+              class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-3"
+              data-i18n="SETTINGS.KEYBOARD_SHORTCUTS"
+            >
+              Keyboard Shortcuts
+            </h3>
             <div class="grid grid-cols-2 gap-x-8 gap-y-2 px-1">
               <div class="flex justify-between text-xs">
                 <span class="text-mute" data-i18n="SETTINGS.SEARCH">Search</span>
-                <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">/</kbd>
+                <kbd
+                  class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+                >
+                  /
+                </kbd>
               </div>
               <div class="flex justify-between text-xs">
                 <span class="text-mute" data-i18n="SETTINGS.SELECT">Select</span>
-                <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">1-9</kbd>
+                <kbd
+                  class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+                >
+                  1-9
+                </kbd>
               </div>
               <div class="flex justify-between text-xs">
                 <span class="text-mute" data-i18n="SETTINGS.NAVIGATE">Navigate</span>
-                <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">j / k / g / G</kbd>
+                <kbd
+                  class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+                >
+                  j / k / g / G
+                </kbd>
               </div>
               <div class="flex justify-between text-xs">
                 <span class="text-mute" data-i18n="SETTINGS.COPY">Copy</span>
-                <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">Enter</kbd>
+                <kbd
+                  class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+                >
+                  Enter
+                </kbd>
               </div>
             </div>
           </section>
@@ -260,68 +475,168 @@
       <!-- Auth Form -->
       <div id="auth-form" class="hidden absolute inset-0 bg-canvas z-30 flex flex-col p-6">
         <div class="flex items-center gap-3 mb-8">
-          <button id="auth-back" class="p-2 hover:bg-surface-soft rounded-full transition-colors cursor-pointer text-mute">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          <button
+            id="auth-back"
+            class="p-2 hover:bg-surface-soft rounded-full transition-colors cursor-pointer text-mute"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
           </button>
           <h2 id="form-title" class="text-lg font-semibold" data-i18n="AUTH.SIGN_IN">Sign In</h2>
         </div>
-        
+
         <div class="space-y-4">
           <div>
-            <label class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-1 block" data-i18n="AUTH.EMAIL_LABEL">Email</label>
-            <input type="email" id="email" placeholder="name@example.com" required class="input-field !m-0" />
+            <label
+              class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-1 block"
+              data-i18n="AUTH.EMAIL_LABEL"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              placeholder="name@example.com"
+              required
+              class="input-field !m-0"
+            />
           </div>
           <div>
-            <label class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-1 block" data-i18n="AUTH.PASSWORD_LABEL">Password</label>
-            <input type="password" id="password" placeholder="••••••••" required class="input-field !m-0" />
+            <label
+              class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-1 block"
+              data-i18n="AUTH.PASSWORD_LABEL"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="••••••••"
+              required
+              class="input-field !m-0"
+            />
           </div>
-          <button id="submit-btn" class="btn-primary w-full mt-2 shadow-md" data-i18n="AUTH.CONTINUE">Continue</button>
-          
-          <button id="toggle-link" class="w-full text-center text-xs text-mute hover:text-accent transition-colors py-2">
-            <span data-i18n="AUTH.NEED_ACCOUNT">Don't have an account?</span> <span class="font-semibold text-accent" data-i18n="AUTH.SIGN_UP">Sign Up</span>
+          <button
+            id="submit-btn"
+            class="btn-primary w-full mt-2 shadow-md"
+            data-i18n="AUTH.CONTINUE"
+          >
+            Continue
+          </button>
+
+          <button
+            id="toggle-link"
+            class="w-full text-center text-xs text-mute hover:text-accent transition-colors py-2"
+          >
+            <span data-i18n="AUTH.NEED_ACCOUNT">Don't have an account?</span>
+            <span class="font-semibold text-accent" data-i18n="AUTH.SIGN_UP">Sign Up</span>
           </button>
         </div>
-        
-        <div id="status" class="mt-4 p-3 rounded-xl hidden text-xs text-center font-medium bg-danger/5 text-danger border border-danger/10"></div>
+
+        <div
+          id="status"
+          class="mt-4 p-3 rounded-xl hidden text-xs text-center font-medium bg-danger/5 text-danger border border-danger/10"
+        ></div>
       </div>
 
       <!-- Help View Overlay -->
-      <div id="help-view" class="hidden absolute inset-0 bg-canvas/95 backdrop-blur-sm z-50 flex flex-col p-8 items-center justify-center">
+      <div
+        id="help-view"
+        class="hidden absolute inset-0 bg-canvas/95 backdrop-blur-sm z-50 flex flex-col p-8 items-center justify-center"
+      >
         <div class="w-full max-w-xs space-y-6">
           <div class="flex items-center justify-between mb-2">
-            <h2 class="text-lg font-semibold text-accent" data-i18n="HELP.TITLE">Keyboard Shortcuts</h2>
-            <button id="help-close" class="p-2 hover:bg-surface-soft rounded-full transition-colors cursor-pointer text-mute hover:text-accent">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <h2 class="text-lg font-semibold text-accent" data-i18n="HELP.TITLE">
+              Keyboard Shortcuts
+            </h2>
+            <button
+              id="help-close"
+              class="p-2 hover:bg-surface-soft rounded-full transition-colors cursor-pointer text-mute hover:text-accent"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
             </button>
           </div>
           <div class="space-y-3">
             <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
               <span class="text-mute" data-i18n="HELP.SHOW_HELP">Show/Hide Help</span>
-              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">?</kbd>
+              <kbd
+                class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+              >
+                ?
+              </kbd>
             </div>
             <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
               <span class="text-mute" data-i18n="HELP.SEARCH">Focus Search</span>
-              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">/</kbd>
+              <kbd
+                class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+              >
+                /
+              </kbd>
             </div>
             <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
               <span class="text-mute" data-i18n="HELP.NAVIGATE">Navigate List</span>
-              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">j / k / g / G</kbd>
+              <kbd
+                class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+              >
+                j / k / g / G
+              </kbd>
             </div>
             <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
               <span class="text-mute" data-i18n="HELP.SELECT">Select Item</span>
-              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">1-9</kbd>
+              <kbd
+                class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+              >
+                1-9
+              </kbd>
             </div>
             <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
               <span class="text-mute" data-i18n="HELP.COPY">Copy Selection</span>
-              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">Enter</kbd>
+              <kbd
+                class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+              >
+                Enter
+              </kbd>
             </div>
             <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
               <span class="text-mute" data-i18n="HELP.PIN">Toggle Pin</span>
-              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">Cmd+Enter</kbd>
+              <kbd
+                class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+              >
+                Cmd+Enter
+              </kbd>
             </div>
             <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
               <span class="text-mute" data-i18n="HELP.CLOSE">Close/Back</span>
-              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">Esc</kbd>
+              <kbd
+                class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]"
+              >
+                Esc
+              </kbd>
             </div>
           </div>
           <div class="text-center pt-4">
@@ -331,518 +646,6 @@
       </div>
     </main>
 
-    <script>
-      let isLogin = true,
-        currentUser = null,
-        fullHistory = [],
-        filteredHistory = [],
-        localSelectedIndex = 0,
-        lastGTime = 0,
-        i18n = {};
-
-      const historyView = document.getElementById('history-view'),
-        settingsView = document.getElementById('settings-view'),
-        authForm = document.getElementById('auth-form'),
-        helpView = document.getElementById('help-view');
-      const settingsToggle = document.getElementById('settings-toggle'),
-        helpToggle = document.getElementById('help-toggle'),
-        minimizeBtn = document.getElementById('minimize-btn'),
-        quitBtn = document.getElementById('quit-btn'),
-        settingsBack = document.getElementById('settings-back'),
-        authBack = document.getElementById('auth-back'),
-        helpClose = document.getElementById('help-close');
-      const formTitle = document.getElementById('form-title'),
-        submitBtn = document.getElementById('submit-btn'),
-        toggleLink = document.getElementById('toggle-link'),
-        status = document.getElementById('status');
-      const authTriggerBtn = document.getElementById('auth-trigger-btn'),
-        logoutBtn = document.getElementById('logout-btn'),
-        userEmailDisplay = document.getElementById('user-email'),
-        syncStatusDisplay = document.getElementById('sync-status');
-      const soundToggle = document.getElementById('sound-toggle'),
-        statsToggle = document.getElementById('stats-toggle'),
-        appearanceSelect = document.getElementById('appearance-select'),
-        cleanupStrategy = document.getElementById('cleanup-strategy'),
-        cleanupValue = document.getElementById('cleanup-value'),
-        syncToggle = document.getElementById('sync-toggle'),
-        forceSyncBtn = document.getElementById('force-sync-btn');
-
-      const shortcutInput = document.getElementById('shortcut-input'),
-        pinShortcutInput = document.getElementById('pin-shortcut-input'),
-        saveShortcutBtn = document.getElementById('save-shortcut-btn'),
-        shortcutStatus = document.getElementById('shortcut-status');
-      const historyList = document.getElementById('history-list'),
-        searchInput = document.getElementById('search-input');
-
-      window.api = {
-        onHistoryUpdate: (cb) => { window.onHistoryUpdate = cb; },
-        onFocusSearch: (cb) => { window.onFocusSearch = cb; },
-        onSyncComplete: (cb) => { window.onSyncComplete = cb; },
-        getHistory: () => window.pywebview ? window.pywebview.api.get_history() : Promise.resolve([]),
-        copyToClipboard: (t) => window.pywebview ? window.pywebview.api.copy_to_clipboard(t) : Promise.resolve(true),
-        togglePin: (id) => window.pywebview ? window.pywebview.api.toggle_pin(id) : Promise.resolve(true),
-        getTranslations: () => window.pywebview ? window.pywebview.api.get_translations() : Promise.resolve({}),
-        getShortcut: () => window.pywebview ? window.pywebview.api.get_shortcut() : Promise.resolve({}),
-        updateShortcut: (d) => window.pywebview ? window.pywebview.api.update_shortcut(d) : Promise.resolve({ success: true }),
-        getSettings: () => window.pywebview ? window.pywebview.api.get_settings() : Promise.resolve({}),
-        updateSettings: (d) => window.pywebview ? window.pywebview.api.update_settings(d) : Promise.resolve({ success: true }),
-        login: (d) => window.pywebview ? window.pywebview.api.login(d) : Promise.resolve({ success: true }),
-        register: (d) => window.pywebview ? window.pywebview.api.register(d) : Promise.resolve({ success: true }),
-        logout: () => window.pywebview ? window.pywebview.api.logout() : Promise.resolve(true),
-        forceSync: () => window.pywebview ? window.pywebview.api.force_sync() : Promise.resolve({ success: true }),
-        getSystemAppearance: () => window.pywebview ? window.pywebview.api.get_system_appearance() : Promise.resolve('light'),
-        getLastSyncTime: () => window.pywebview ? window.pywebview.api.get_last_sync_time() : Promise.resolve(null)
-      };
-
-      window.addEventListener('pywebviewready', () => {
-        const pyApi = window.pywebview.api;
-        window.api = {
-          onHistoryUpdate: (cb) => { window.onHistoryUpdate = cb; },
-          onFocusSearch: (cb) => { window.onFocusSearch = cb; },
-          onSyncComplete: (cb) => { window.onSyncComplete = cb; },
-          getHistory: () => pyApi.get_history(),
-          copyToClipboard: (t) => pyApi.copy_to_clipboard(t),
-          togglePin: (id) => pyApi.toggle_pin(id),
-          getTranslations: () => pyApi.get_translations(),
-          getShortcut: () => pyApi.get_shortcut(),
-          updateShortcut: (d) => pyApi.update_shortcut(d),
-          getSettings: () => pyApi.get_settings(),
-          updateSettings: (d) => pyApi.update_settings(d),
-          login: (d) => pyApi.login(d),
-          register: (d) => pyApi.register(d),
-          logout: () => pyApi.logout(),
-          forceSync: () => pyApi.force_sync(),
-          getSystemAppearance: () => pyApi.get_system_appearance(),
-          getLastSyncTime: () => pyApi.get_last_sync_time()
-        };
-        loadData();
-      });
-
-
-        loadData();
-      });
-
-      const formatDate = (timestamp) => {
-        const date = new Date(timestamp * 1000);
-        const now = new Date();
-        const isToday = date.toDateString() === now.toDateString();
-        
-        if (isToday) {
-          return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-        
-        return date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-      };
-
-      const applyTheme = async (theme) => {
-        const root = document.documentElement;
-        let effectiveTheme = theme;
-        
-        if (theme === 'system') {
-          const systemTheme = await window.api.getSystemAppearance();
-          effectiveTheme = systemTheme;
-        }
-        
-        if (effectiveTheme === 'dark') {
-          root.classList.add('dark');
-        } else {
-          root.classList.remove('dark');
-        }
-      };
-
-      const translate = (key, params = {}) => {
-        const keys = key.split('.');
-        let value = i18n;
-        for (const k of keys) { value = value ? value[k] : null; }
-        if (!value) return key;
-        
-        let result = value;
-        for (const p in params) { 
-            result = result.replace(`{${p}}`, params[p]); 
-        }
-        return result;
-      };
-
-      const updateLastSyncDisplay = (timestamp) => {
-        const lastSyncEl = document.getElementById('last-sync-time');
-        if (!lastSyncEl) return;
-        
-        if (!timestamp) {
-            lastSyncEl.innerText = translate('SETTINGS.LAST_SYNCED', { time: translate('SETTINGS.NEVER') });
-            return;
-        }
-        
-        lastSyncEl.innerText = translate('SETTINGS.LAST_SYNCED', { time: formatDate(timestamp) });
-      };
-
-      const loadData = async () => {
-        try {
-          console.log("Loading data...");
-          i18n = await window.api.getTranslations();
-          console.log("Translations loaded");
-
-          document.querySelectorAll('[data-i18n]').forEach(el => {
-            el.innerText = translate(el.getAttribute('data-i18n'));
-          });
-          document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            el.placeholder = translate(el.getAttribute('data-i18n-placeholder'));
-          });
-          document.querySelectorAll('[data-i18n-title]').forEach(el => {
-            el.title = translate(el.getAttribute('data-i18n-title'));
-          });
-          
-          const shortcuts = await window.api.getShortcut();
-          console.log("Shortcuts loaded");
-          shortcutInput.value = shortcuts.open_picker || '';
-          pinShortcutInput.value = shortcuts.toggle_pin || '';
-
-          const settings = await window.api.getSettings();
-          console.log("Settings loaded");
-          soundToggle.checked = settings.sound_enabled;
-          statsToggle.checked = settings.show_stats;
-          syncToggle.checked = settings.auto_sync;
-          if (appearanceSelect) appearanceSelect.value = settings.appearance || 'system';
-          cleanupStrategy.value = settings.cleanup_strategy || 'limit';
-          cleanupValue.value = settings.cleanup_value || 100;
-          
-          fullHistory = await window.api.getHistory();
-          console.log("History loaded", fullHistory.length);
-          renderHistory();
-
-          const lastSyncTime = await window.api.getLastSyncTime();
-          updateLastSyncDisplay(lastSyncTime);
-        } catch (e) {
-          console.error("Failed to load data:", e);
-          if (historyList) {
-            historyList.innerHTML = `<div class="text-danger p-4">Error loading data: ${e.message}<br>${e.stack}</div>`;
-          }
-        }
-      };
-
-      const renderHistory = (filter = '') => {
-        historyList.innerHTML = '';
-        filteredHistory = fullHistory.filter((item) => 
-          item && typeof item.content === 'string' && item.content.toLowerCase().includes(filter.toLowerCase())
-        );
-        if (fullHistory.length === 0) {
-          historyList.innerHTML =
-            `<div class="text-mute text-center py-8 text-[13px] italic">${translate('HISTORY.EMPTY')}</div>`;
-          return;
-        }
-        if (filteredHistory.length === 0) {
-          historyList.innerHTML =
-            `<div class="text-mute text-center py-8 text-[13px] italic">${translate('HISTORY.NO_MATCHES')}</div>`;
-          return;
-        }
-        if (localSelectedIndex >= filteredHistory.length)
-          localSelectedIndex = filteredHistory.length - 1;
-
-        filteredHistory.forEach((itemData, i) => {
-          const item = document.createElement('div'),
-            isSel = i === localSelectedIndex,
-            isPinned = itemData.is_pinned,
-            showStats = statsToggle.checked;
-          
-          let statsHtml = '';
-          if (showStats) {
-            const content = itemData.content || '';
-            const charCount = content.length;
-            const wordCount = content.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const isFormatted = content.includes('\n') || content.includes('\t');
-            
-            // Simple code detection
-            const isCode = /[{}[\];]|function\s+\w+|import\s+.*from|const\s+\w+\s*=|def\s+\w+\(|if\s+.*:/.test(content);
-            const contentType = isCode ? 'Code' : (isFormatted ? 'Rich' : 'Text');
-
-            statsHtml = `
-                <span class="text-[10px] ${isSel ? 'text-accent/70' : 'text-mute'} flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14.5 2 14.5 7.5 20 7.5"></polyline></svg>
-                  ${contentType}
-                </span>
-                <span class="text-[10px] ${isSel ? 'text-accent/70' : 'text-mute'} flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="12" y1="20" x2="12" y2="4"></line><line x1="9" y1="20" x2="15" y2="20"></line></svg>
-                  ${charCount}
-                </span>
-                <span class="text-[10px] ${isSel ? 'text-accent/70' : 'text-mute'} flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/></svg>
-                  ${wordCount}
-                </span>
-            `;
-          }
-
-          item.className = `p-[11px] bg-surface-card border-2 rounded-md cursor-pointer group transition-all flex items-start gap-3 ${isSel ? 'border-accent' : 'border-hairline hover:border-accent'}`;
-            item.innerHTML = `
-            <span class="text-[10px] ${isSel ? 'text-accent font-bold' : 'text-mute'} font-mono mt-0.5">${i + 1}</span>
-            <div class="flex-1 min-w-0">
-              <div class="text-[13px] ${isSel ? 'text-accent font-bold' : 'text-primary'} break-words whitespace-pre-wrap">${itemData.content.length > 100 ? itemData.content.substring(0, 97) + '...' : itemData.content}</div>
-              <div class="flex items-center gap-3 mt-1 flex-wrap">
-                <span class="text-[10px] ${isSel ? 'text-accent/70' : 'text-mute'} flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                  ${formatDate(itemData.timestamp)}
-                </span>
-                <span class="text-[10px] ${isSel ? 'text-accent/70' : 'text-mute'} flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                  ${itemData.source_app || 'Unknown'}
-                </span>
-                ${statsHtml}
-              </div>
-            </div>
-            <div class="flex items-center gap-2 mt-0.5">
-               <button class="pin-btn p-1 hover:bg-surface-soft rounded-full transition-colors ${isPinned ? 'text-accent' : 'text-mute opacity-0 group-hover:opacity-100'}" title="${isPinned ? translate('HISTORY.UNPIN') : translate('HISTORY.PIN')}">
-                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="${isPinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a2 2 0 0 0 1.27 1.87L12 18.22l7.73-6.35A2 2 0 0 0 21 10z"></path><line x1="12" y1="18" x2="12" y2="22"></line></svg>
-               </button>
-               <div class="text-[10px] ${isSel ? 'text-accent' : 'text-mute'} group-hover:text-accent font-mono">${isSel ? '►' : '↵'}</div>
-            </div>`;
-          
-          item.onclick = (e) => {
-            if (e.target.closest('.pin-btn')) {
-              e.stopPropagation();
-              window.api.togglePin(itemData.id);
-              return;
-            }
-            localSelectedIndex = i;
-            window.api.copyToClipboard(itemData.content);
-          };
-          historyList.appendChild(item);
-          if (isSel) item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        });
-      };
-
-      searchInput.oninput = (e) => {
-        localSelectedIndex = 0;
-        renderHistory(e.target.value);
-      };
-
-      settingsToggle.onclick = () => {
-        settingsView.classList.remove('hidden');
-      };
-
-      settingsBack.onclick = () => {
-        settingsView.classList.add('hidden');
-      };
-
-      authTriggerBtn.onclick = () => {
-        authForm.classList.remove('hidden');
-      };
-
-      authBack.onclick = () => {
-        authForm.classList.add('hidden');
-      };
-
-      helpToggle.onclick = () => {
-        helpView.classList.toggle('hidden');
-      };
-
-      helpClose.onclick = () => {
-        helpView.classList.add('hidden');
-      };
-
-      minimizeBtn.onclick = () => window.api.minimize();
-      quitBtn.onclick = () => window.api.quit();
-
-      saveShortcutBtn.onclick = async () => {
-        const openPicker = shortcutInput.value.trim();
-        const togglePin = pinShortcutInput.value.trim();
-        
-        saveShortcutBtn.disabled = true;
-        shortcutStatus.innerText = 'Updating...';
-        
-        const res = await window.api.updateShortcut({ 
-          open_picker: openPicker, 
-          toggle_pin: togglePin 
-        });
-        
-        shortcutStatus.innerText = res.success ? 'Updated!' : 'Error: ' + res.error;
-        shortcutStatus.className =
-          'text-[10px] mt-2 ' + (res.success ? 'text-success' : 'text-danger');
-        
-        setTimeout(() => {
-          shortcutStatus.innerText = '';
-          saveShortcutBtn.disabled = false;
-        }, 2000);
-      };
-
-      soundToggle.onchange = async () => {
-        await window.api.updateSettings({ sound_enabled: soundToggle.checked });
-      };
-
-      statsToggle.onchange = async () => {
-        await window.api.updateSettings({ show_stats: statsToggle.checked });
-        renderHistory(searchInput.value);
-      };
-
-      if (appearanceSelect) {
-        appearanceSelect.onchange = async () => {
-          await window.api.updateSettings({ appearance: appearanceSelect.value });
-          applyTheme(appearanceSelect.value);
-        };
-      }
-
-      syncToggle.onchange = async () => {
-        await window.api.updateSettings({ auto_sync: syncToggle.checked });
-      };
-
-      forceSyncBtn.onclick = async () => {
-        forceSyncBtn.disabled = true;
-        const originalText = forceSyncBtn.innerText;
-        forceSyncBtn.innerText = translate('SETTINGS.SYNCING');
-        
-        const res = await window.api.forceSync();
-        
-        if (res.success) {
-            forceSyncBtn.innerText = translate('SETTINGS.SYNCED');
-            updateLastSyncDisplay(res.last_sync_time);
-            setTimeout(() => {
-                forceSyncBtn.innerText = originalText;
-                forceSyncBtn.disabled = false;
-            }, 2000);
-            fullHistory = await window.api.getHistory();
-            renderHistory(searchInput.value);
-        } else {
-            forceSyncBtn.innerText = 'Error!';
-            setTimeout(() => {
-                forceSyncBtn.innerText = originalText;
-                forceSyncBtn.disabled = false;
-            }, 2000);
-        }
-      };
-
-      window.api.onSyncComplete((timestamp) => {
-        updateLastSyncDisplay(timestamp);
-      });
-
-      cleanupStrategy.onchange = async () => {
-        await window.api.updateSettings({ cleanup_strategy: cleanupStrategy.value });
-      };
-
-      cleanupValue.oninput = async () => {
-        if (cleanupValue.value) {
-            await window.api.updateSettings({ cleanup_value: parseInt(cleanupValue.value) });
-        }
-      };
-
-      logoutBtn.onclick = async () => {
-        await window.api.logout();
-        currentUser = null;
-        userEmailDisplay.innerText = 'Guest';
-        syncStatusDisplay.innerText = 'Offline mode: local storage';
-        authTriggerBtn.classList.remove('hidden');
-        logoutBtn.classList.add('hidden');
-        loadData();
-        settingsBack.click();
-      };
-
-      toggleLink.onclick = () => {
-        isLogin = !isLogin;
-        formTitle.innerText = isLogin ? 'Login' : 'Register';
-        submitBtn.innerText = isLogin ? 'Login' : 'Register';
-        toggleLink.innerText = isLogin ? '[+] No account? Register' : '[+] Have account? Login';
-      };
-
-      submitBtn.onclick = async () => {
-        const email = document.getElementById('email').value,
-          pass = document.getElementById('password').value;
-        status.classList.remove('hidden');
-        status.innerText = 'Processing...';
-        const res = isLogin
-          ? await window.api.login({ email, password: pass })
-          : await window.api.register({ email, password: pass });
-        if (res.success) {
-          currentUser = res.user;
-          authForm.classList.add('hidden');
-          userEmailDisplay.innerText = res.user.email;
-          syncStatusDisplay.innerText = 'Cloud sync active';
-          authTriggerBtn.classList.add('hidden');
-          logoutBtn.classList.remove('hidden');
-          loadData();
-        } else {
-          status.innerText = 'Error: ' + res.error;
-          status.classList.add('text-danger');
-        }
-      };
-
-      document.addEventListener('keydown', (e) => {
-        const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
-        if (e.key === '?' && !isInput) {
-          e.preventDefault();
-          helpView.classList.toggle('hidden');
-          return;
-        }
-        if (e.key === '/' && !isInput) {
-          e.preventDefault();
-          helpView.classList.add('hidden');
-          searchInput.focus();
-          return;
-        }
-        if (e.key === 'Escape') {
-          if (!helpView.classList.contains('hidden')) helpView.classList.add('hidden');
-          else if (isInput) document.activeElement.blur();
-          else if (!authForm.classList.contains('hidden')) authBack.click();
-          else if (!settingsView.classList.contains('hidden')) settingsBack.click();
-          else {
-            localSelectedIndex = -1;
-            renderHistory(searchInput.value);
-          }
-          return;
-        }
-        if (e.key >= '1' && e.key <= '9' && !e.ctrlKey && !e.metaKey && !e.altKey && !isInput) {
-          const idx = parseInt(e.key) - 1;
-          if (filteredHistory[idx]) window.api.copyToClipboard(filteredHistory[idx].content);
-          return;
-        }
-        if (!isInput) {
-          if (e.key === 'j') {
-            localSelectedIndex = (localSelectedIndex + 1) % (filteredHistory.length || 1);
-            renderHistory(searchInput.value);
-            lastGTime = 0;
-          } else if (e.key === 'k') {
-            localSelectedIndex =
-              localSelectedIndex <= 0 ? (filteredHistory.length || 1) - 1 : localSelectedIndex - 1;
-            renderHistory(searchInput.value);
-            lastGTime = 0;
-          } else if (e.key === 'G') {
-            localSelectedIndex = filteredHistory.length - 1;
-            renderHistory(searchInput.value);
-            lastGTime = 0;
-          } else if (e.key === 'g') {
-            const now = Date.now();
-            if (now - lastGTime < 500) {
-              localSelectedIndex = 0;
-              renderHistory(searchInput.value);
-              lastGTime = 0;
-            } else {
-              lastGTime = now;
-            }
-          } else if (e.key === 'Enter') {
-            lastGTime = 0;
-            if (e.ctrlKey || e.metaKey) {
-                // Check if current shortcut matches (default to Ctrl/Cmd + Enter)
-                if (localSelectedIndex !== -1) {
-                    window.api.togglePin(filteredHistory[localSelectedIndex].id);
-                }
-            } else if (localSelectedIndex !== -1) {
-                window.api.copyToClipboard(filteredHistory[localSelectedIndex].content);
-            }
-          }
-        } else if (e.key === 'Enter' && document.activeElement === searchInput && filteredHistory.length > 0) {
-          if (e.ctrlKey || e.metaKey) {
-            window.api.togglePin(filteredHistory[localSelectedIndex === -1 ? 0 : localSelectedIndex].id);
-          } else {
-            window.api.copyToClipboard(
-                filteredHistory[localSelectedIndex === -1 ? 0 : localSelectedIndex].content
-            );
-          }
-        }
-      });
-
-      // Listen for system theme changes
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if (appearanceSelect && appearanceSelect.value === 'system') {
-          applyTheme('system');
-        }
-      });
-      loadData();
-    </script>
-
+    <script src="app.js"></script>
   </body>
 </html>

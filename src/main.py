@@ -183,7 +183,8 @@ def auto_sync_task(window, use_case):
                 logger.info("Auto-syncing...")
                 if use_case.sync():
                     last_sync = use_case.last_sync_time
-                    js = f"if (window.onSyncComplete) window.onSyncComplete({last_sync})"
+                    last_sync_js = last_sync if last_sync is not None else "null"
+                    js = f"if (window.onSyncComplete) window.onSyncComplete({last_sync_js})"
                     window.evaluate_js(js)
         except Exception as e:
             logger.error(f"Error in auto-sync task: {e}")

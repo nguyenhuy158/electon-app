@@ -45,9 +45,11 @@ test:
 
 lint:
 	./.venv/bin/ruff check .
+	npx htmlhint src/renderer/index.html
 
 format:
 	./.venv/bin/ruff format .
+	pnpm prettier --write src/renderer/index.html
 
 cov:
 	./.venv/bin/pytest --cov=src src --cov-report=term-missing --cov-report=html
@@ -62,6 +64,7 @@ build: build-ui
 	./.venv/bin/pyinstaller --noconfirm --onefile --windowed --name "QuickClip" \
 		--icon "icon.png" \
 		--add-data "src/renderer/index.html:src/renderer" \
+		--add-data "src/renderer/app.js:src/renderer" \
 		--add-data "src/renderer/styles.css:src/renderer" \
 		--add-data "icon.png:." \
 		src/main.py

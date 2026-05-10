@@ -89,6 +89,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "globals": "^17.6.0",
+    "htmlhint": "^1.9.2",
     "husky": "^9.1.7",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
