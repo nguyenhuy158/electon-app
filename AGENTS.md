@@ -3,29 +3,28 @@
 ## Architecture: Hexagonal (TypeScript)
 - **Domain** (`src/domain/`): Pure logic, models, and constants. No external dependencies.
 - **Application** (`src/application/`): Use Cases and Port interfaces.
-- **Infrastructure** (`src/infrastructure//`): Adapters (Postgres, Electron, Logging).
-- **Entry Point**: `src/main.ts` (Main process/DI root) and `src/index.html` (Renderer).
+- **Infrastructure** (`src/infrastructure/`): Adapters (Neon/Postgres, Electron, Local FS).
+- **Entry Points**: `src/main.ts` (Main/DI root), `src/index.html` (Renderer), `src/preload.ts` (IPC Bridge).
+
+## Verified Commands (`Makefile`)
+- `make s`: Build (TSC + Tailwind v4) and start Electron.
+- `make t`: Run Jest tests.
+- `make build`: Explicit build step (`tsc` + CSS compilation + HTML copy).
 
 ## Critical Constraints
-- **Centralized Constants**: Use `APP_CONSTANTS` from `src/domain/constants/index.ts`. No magic strings/numbers.
-- **String Externalization**: Use `i18n` Message Catalog from `src/domain/i18n/index.ts`. No hardcoded UI strings.
-- **No Comments**: Code must be self-documenting via naming. **Delete all comments** you encounter or write.
-- **100% Coverage**: Required for `Domain` and `Application` layers. Enforced via `make cov`.
-
-## Shortcuts & Commands (`Makefile`)
-- `make i`: Install (`pnpm`)
-- `make s`: Start app (Builds Tailwind + TSC + Electron)
-- `make t`: Run tests
-- `make l` / `make f`: Lint / Format
-- `make cov`: Check coverage (Gatekeeper for `Domain`/`Application`)
-
-## UI & Styling
-- **Design System**: Terminal-native aesthetic (Berkeley Mono, 4px radius, cream/ink palette).
-- **Tailwind v4**: Styles are in `src/styles.css` using `@theme`.
-- **Build**: CSS is compiled from `src/styles.css` to `dist/styles.css`.
+- **Platform**: Support for **Linux and macOS only**.
+- **Centralized Constants**: Use `APP_CONSTANTS` in `src/domain/constants/index.ts` (includes global shortcuts).
+- **i18n**: No hardcoded UI strings. Use `i18n` catalog in `src/domain/i18n/`.
+- **No Comments**: Delete all comments (code must be self-documenting via naming).
+- **100% Coverage**: Required for `Domain` and `Application` layers (`make cov`).
 
 ## Operational Gotchas
-- **IPC Bridge**: Renderer **must** use `window.api` (via `src/preload.ts`). Direct Node imports in renderer will fail.
-- **Logging**: Use `WinstonLogger` port. Log level configurable via `LOG_LEVEL` in `.env`.
-- **Tray Icon**: Requires `icon.png` in root (or configured path in constants) to initialize.
-- **Sync**: Use Cases must await all repository operations to prevent race conditions.
+- **Tailwind v4 Fix**: DO NOT use `@apply` with theme variables in `src/styles.css`; use standard CSS `var(--color-...)` to avoid build resolution errors.
+- **IPC Bridge**: Renderer **must** use `window.api`. Direct Node/Electron imports in renderer fail. Update `src/preload.ts` when adding IPC handlers.
+- **Auth (Neon)**: 
+  - `NEON_AUTH_URL` must be the Auth endpoint.
+  - `callbackURL` must be an absolute URL (e.g., `http://localhost.com`) despite Electron's `file://` scheme.
+- **Storage**:
+  - **Guest Mode**: Local JSON at `~/.quickclip/clips.json`.
+  - **Smart Switch**: `SmartClipboardRepository` proxies between local and cloud based on auth state.
+- **Tray Icon**: Requires `icon.png` in root (configured via `APP_CONSTANTS.UI.TRAY_ICON_PATH`).
