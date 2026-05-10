@@ -81,16 +81,31 @@ class API:
             AppConstants.SHORTCUTS["OPEN_PICKER"] = data["open_picker"]
         if "toggle_pin" in data:
             AppConstants.SHORTCUTS["TOGGLE_PIN"] = data["toggle_pin"]
+        save_settings()
         return {"success": True}
 
     def get_settings(self):
         return {
             "sound_enabled": AppConstants.SOUND["ENABLED"],
+            "show_stats": AppConstants.UI_SETTINGS["SHOW_STATS"],
+            "cleanup_strategy": AppConstants.CLIPBOARD["CLEANUP_STRATEGY"],
+            "cleanup_value": AppConstants.CLIPBOARD["CLEANUP_VALUE"],
         }
 
     def update_settings(self, data):
         if "sound_enabled" in data:
             AppConstants.SOUND["ENABLED"] = data["sound_enabled"]
+        if "show_stats" in data:
+            AppConstants.UI_SETTINGS["SHOW_STATS"] = data["show_stats"]
+        if "cleanup_strategy" in data:
+            AppConstants.CLIPBOARD["CLEANUP_STRATEGY"] = data["cleanup_strategy"]
+        if "cleanup_value" in data:
+            try:
+                AppConstants.CLIPBOARD["CLEANUP_VALUE"] = int(data["cleanup_value"])
+            except ValueError:
+                pass
+
+        save_settings()
         return {"success": True}
 
     def login(self, data):
@@ -163,6 +178,42 @@ def setup_global_shortcut(window):
         logger.error(f"Failed to register hotkey: {e}")
 
 
+def save_settings():
+    path = os.path.expanduser(AppConstants.STORAGE["SETTINGS_PATH"])
+    try:
+        settings = {
+            "sound_enabled": AppConstants.SOUND["ENABLED"],
+            "show_stats": AppConstants.UI_SETTINGS["SHOW_STATS"],
+            "cleanup_strategy": AppConstants.CLIPBOARD["CLEANUP_STRATEGY"],
+            "cleanup_value": AppConstants.CLIPBOARD["CLEANUP_VALUE"],
+            "shortcuts": AppConstants.SHORTCUTS,
+        }
+        with open(path, "w") as f:
+            json.dump(settings, f)
+    except Exception as e:
+        logger.error(f"Error saving settings: {e}")
+
+
+def load_settings():
+    path = os.path.expanduser(AppConstants.STORAGE["SETTINGS_PATH"])
+    if os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                settings = json.load(f)
+                if "sound_enabled" in settings:
+                    AppConstants.SOUND["ENABLED"] = settings["sound_enabled"]
+                if "show_stats" in settings:
+                    AppConstants.UI_SETTINGS["SHOW_STATS"] = settings["show_stats"]
+                if "cleanup_strategy" in settings:
+                    AppConstants.CLIPBOARD["CLEANUP_STRATEGY"] = settings["cleanup_strategy"]
+                if "cleanup_value" in settings:
+                    AppConstants.CLIPBOARD["CLEANUP_VALUE"] = settings["cleanup_value"]
+                if "shortcuts" in settings:
+                    AppConstants.SHORTCUTS.update(settings["shortcuts"])
+        except Exception as e:
+            logger.error(f"Error loading settings: {e}")
+
+
 if __name__ == "__main__":
     # Setup Logging
     log_file = os.path.expanduser(AppConstants.LOGGING["LOG_FILE"])
@@ -177,6 +228,9 @@ if __name__ == "__main__":
         handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stdout)],
     )
     logger.info(f"Starting QuickClip with log level: {log_level}")
+
+    # Load persisted settings
+    load_settings()
 
     # Dependency Injection
     clipboard_service = MacOSClipboardService()

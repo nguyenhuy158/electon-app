@@ -52,6 +52,11 @@ MESSAGES = {
         "COPY": "Copy",
         "SOUND_EFFECTS": "Sound Effects",
         "ENABLE_SOUND": "Enable sound effects",
+        "CLEANUP": "Auto-cleanup",
+        "CLEANUP_STRATEGY": "Cleanup by",
+        "CLEANUP_VALUE": "Keep amount",
+        "STRATEGY_LIMIT": "Maximum items",
+        "STRATEGY_DAYS": "Days old",
     },
     "HISTORY": {
         "SEARCH_PLACEHOLDER": "Search clipboard...",

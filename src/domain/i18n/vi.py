@@ -52,6 +52,11 @@ MESSAGES = {
         "COPY": "Sao chép",
         "SOUND_EFFECTS": "Âm thanh",
         "ENABLE_SOUND": "Bật âm thanh hệ thống",
+        "CLEANUP": "Tự động dọn dẹp",
+        "CLEANUP_STRATEGY": "Dọn dẹp theo",
+        "CLEANUP_VALUE": "Số lượng giữ lại",
+        "STRATEGY_LIMIT": "Số lượng tối đa",
+        "STRATEGY_DAYS": "Số ngày tối đa",
     },
     "HISTORY": {
         "SEARCH_PLACEHOLDER": "Tìm kiếm trong bộ nhớ tạm...",

@@ -37,12 +37,21 @@ class ClipboardUseCase:
 
         self._sort_history()
 
-        # Apply limit while preserving pinned items
-        limit = AppConstants.CLIPBOARD["DEFAULT_HISTORY_LIMIT"]
-        if len(self.history) > limit:
-            pinned = [c for c in self.history if c.is_pinned]
-            unpinned = [c for c in self.history if not c.is_pinned]
-            self.history = pinned + unpinned[: limit - len(pinned)]
+        # Apply cleanup while preserving pinned items
+        strategy = AppConstants.CLIPBOARD.get("CLEANUP_STRATEGY", "limit")
+        value = AppConstants.CLIPBOARD.get("CLEANUP_VALUE", 100)
+
+        pinned = [c for c in self.history if c.is_pinned]
+        unpinned = [c for c in self.history if not c.is_pinned]
+
+        if strategy == "limit":
+            if len(self.history) > value:
+                self.history = pinned + unpinned[: value - len(pinned)]
+        elif strategy == "days":
+            now = time.time()
+            max_age_seconds = value * 24 * 3600
+            unpinned = [c for c in unpinned if (now - c.timestamp) < max_age_seconds]
+            self.history = pinned + unpinned
 
         self.clipboard_repository.save_all(self.history)
         return True

@@ -57,7 +57,9 @@ def test_add_to_history_empty_text():
 def test_add_to_history_limit():
     mock_service = MagicMock()
     mock_repo = MagicMock()
-    limit = AppConstants.CLIPBOARD["DEFAULT_HISTORY_LIMIT"]
+    limit = 20
+    AppConstants.CLIPBOARD["CLEANUP_STRATEGY"] = "limit"
+    AppConstants.CLIPBOARD["CLEANUP_VALUE"] = limit
     # Create clips with increasing timestamps
     mock_repo.get_all.return_value = [
         Clip(content=f"clip{i}", timestamp=float(i)) for i in range(limit)
@@ -78,7 +80,9 @@ def test_add_to_history_limit():
 def test_add_to_history_preserves_pinned():
     mock_service = MagicMock()
     mock_repo = MagicMock()
-    limit = AppConstants.CLIPBOARD["DEFAULT_HISTORY_LIMIT"]
+    limit = 20
+    AppConstants.CLIPBOARD["CLEANUP_STRATEGY"] = "limit"
+    AppConstants.CLIPBOARD["CLEANUP_VALUE"] = limit
 
     # Create 1 pinned clip (oldest) and 19 unpinned clips
     clips = [Clip(content="pinned", is_pinned=True, timestamp=0.0)]
@@ -132,3 +136,42 @@ def test_copy_to_clipboard():
 
     assert use_case.copy_to_clipboard("text") is True
     mock_service.copy_to_clipboard.assert_called_with("text")
+
+
+def test_add_to_history_cleanup_days():
+    import time
+
+    mock_service = MagicMock()
+    mock_repo = MagicMock()
+
+    # 3 days ago and 1 day ago
+    now = time.time()
+    three_days_ago = now - (3 * 24 * 3600 + 60)
+    one_day_ago = now - (1 * 24 * 3600)
+
+    clips = [
+        Clip(content="old", timestamp=three_days_ago),
+        Clip(content="recent", timestamp=one_day_ago),
+        Clip(content="old_pinned", timestamp=three_days_ago, is_pinned=True),
+    ]
+    mock_repo.get_all.return_value = clips
+
+    # Set cleanup strategy to 2 days
+    AppConstants.CLIPBOARD["CLEANUP_STRATEGY"] = "days"
+    AppConstants.CLIPBOARD["CLEANUP_VALUE"] = 2
+
+    use_case = ClipboardUseCase(mock_service, mock_repo)
+    use_case.add_to_history("new_clip")
+
+    history = use_case.get_history()
+    # Should have: new_clip, recent, old_pinned (because it's pinned)
+    # 'old' should be removed
+    assert len(history) == 3
+    assert any(c["content"] == "new_clip" for c in history)
+    assert any(c["content"] == "recent" for c in history)
+    assert any(c["content"] == "old_pinned" for c in history)
+    assert not any(c["content"] == "old" for c in history)
+
+    # Reset constants for other tests
+    AppConstants.CLIPBOARD["CLEANUP_STRATEGY"] = "limit"
+    AppConstants.CLIPBOARD["CLEANUP_VALUE"] = 100

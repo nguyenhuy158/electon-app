@@ -11,10 +11,16 @@ class AppConstants:
         "POLLING_INTERVAL_MS": 1000,
         "DEFAULT_HISTORY_LIMIT": 20,
         "MONITOR_INTERVAL": 1.0,
+        "CLEANUP_STRATEGY": "limit",  # 'limit' or 'days'
+        "CLEANUP_VALUE": 100,
     }
-    STORAGE = {"LOCAL_PATH": "~/.quickclip/clips.json"}
+    STORAGE = {
+        "LOCAL_PATH": "~/.quickclip/clips.json",
+        "SETTINGS_PATH": "~/.quickclip/settings.json",
+    }
     SHORTCUTS = {"OPEN_PICKER": "<cmd>+<shift>+v", "TOGGLE_PIN": "Control+Enter"}
     SOUND = {"ENABLED": True}
+    UI_SETTINGS = {"SHOW_STATS": True}
     LOCALE = "en"
     LOGGING = {
         "LOG_FILE": "~/.quickclip/app.log",
