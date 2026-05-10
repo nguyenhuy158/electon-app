@@ -88,9 +88,10 @@ class API:
         return {
             "sound_enabled": AppConstants.SOUND["ENABLED"],
             "show_stats": AppConstants.UI_SETTINGS["SHOW_STATS"],
-            "appearance": AppConstants.UI_SETTINGS["APPEARANCE"],
+            "appearance": AppConstants.UI_SETTINGS.get("APPEARANCE", "system"),
             "cleanup_strategy": AppConstants.CLIPBOARD["CLEANUP_STRATEGY"],
             "cleanup_value": AppConstants.CLIPBOARD["CLEANUP_VALUE"],
+            "auto_sync": AppConstants.SYNC["AUTO_SYNC"],
         }
 
     def update_settings(self, data):
@@ -107,9 +108,12 @@ class API:
                 AppConstants.CLIPBOARD["CLEANUP_VALUE"] = int(data["cleanup_value"])
             except ValueError:
                 pass
+        if "auto_sync" in data:
+            AppConstants.SYNC["AUTO_SYNC"] = data["auto_sync"]
 
         save_settings()
         return {"success": True}
+
 
     def get_system_appearance(self):
         defaults = NSUserDefaults.standardUserDefaults()
@@ -171,9 +175,12 @@ def hot_reload(window):
 
 def auto_sync_task(use_case):
     while True:
-        if AppConstants.SYNC["AUTO_SYNC"]:
-            logger.info("Auto-syncing...")
-            use_case.sync()
+        try:
+            if AppConstants.SYNC["AUTO_SYNC"]:
+                logger.info("Auto-syncing...")
+                use_case.sync()
+        except Exception as e:
+            logger.error(f"Error in auto-sync task: {e}")
         time.sleep(AppConstants.SYNC["INTERVAL_SECONDS"])
 
 
@@ -209,6 +216,7 @@ def save_settings():
             "cleanup_strategy": AppConstants.CLIPBOARD["CLEANUP_STRATEGY"],
             "cleanup_value": AppConstants.CLIPBOARD["CLEANUP_VALUE"],
             "shortcuts": AppConstants.SHORTCUTS,
+            "auto_sync": AppConstants.SYNC["AUTO_SYNC"],
         }
 
         with open(path, "w") as f:

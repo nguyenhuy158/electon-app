@@ -331,6 +331,48 @@
     </main>
 
     <script>
+      let isLogin = true,
+        currentUser = null,
+        fullHistory = [],
+        filteredHistory = [],
+        localSelectedIndex = 0,
+        lastGTime = 0,
+        i18n = {};
+
+      const historyView = document.getElementById('history-view'),
+        settingsView = document.getElementById('settings-view'),
+        authForm = document.getElementById('auth-form'),
+        helpView = document.getElementById('help-view');
+      const settingsToggle = document.getElementById('settings-toggle'),
+        helpToggle = document.getElementById('help-toggle'),
+        minimizeBtn = document.getElementById('minimize-btn'),
+        quitBtn = document.getElementById('quit-btn'),
+        settingsBack = document.getElementById('settings-back'),
+        authBack = document.getElementById('auth-back'),
+        helpClose = document.getElementById('help-close');
+      const formTitle = document.getElementById('form-title'),
+        submitBtn = document.getElementById('submit-btn'),
+        toggleLink = document.getElementById('toggle-link'),
+        status = document.getElementById('status');
+      const authTriggerBtn = document.getElementById('auth-trigger-btn'),
+        logoutBtn = document.getElementById('logout-btn'),
+        userEmailDisplay = document.getElementById('user-email'),
+        syncStatusDisplay = document.getElementById('sync-status');
+      const soundToggle = document.getElementById('sound-toggle'),
+        statsToggle = document.getElementById('stats-toggle'),
+        appearanceSelect = document.getElementById('appearance-select'),
+        cleanupStrategy = document.getElementById('cleanup-strategy'),
+        cleanupValue = document.getElementById('cleanup-value'),
+        syncToggle = document.getElementById('sync-toggle'),
+        forceSyncBtn = document.getElementById('force-sync-btn');
+
+      const shortcutInput = document.getElementById('shortcut-input'),
+        pinShortcutInput = document.getElementById('pin-shortcut-input'),
+        saveShortcutBtn = document.getElementById('save-shortcut-btn'),
+        shortcutStatus = document.getElementById('shortcut-status');
+      const historyList = document.getElementById('history-list'),
+        searchInput = document.getElementById('search-input');
+
       window.api = {
         onHistoryUpdate: (cb) => { window.onHistoryUpdate = cb; },
         onFocusSearch: (cb) => { window.onFocusSearch = cb; },
@@ -347,7 +389,8 @@
         login: (d) => window.pywebview ? window.pywebview.api.login(d) : Promise.resolve({ success: true }),
         register: (d) => window.pywebview ? window.pywebview.api.register(d) : Promise.resolve({ success: true }),
         logout: () => window.pywebview ? window.pywebview.api.logout() : Promise.resolve(true),
-        forceSync: () => window.pywebview ? window.pywebview.api.force_sync() : Promise.resolve({ success: true })
+        forceSync: () => window.pywebview ? window.pywebview.api.force_sync() : Promise.resolve({ success: true }),
+        getSystemAppearance: () => window.pywebview ? window.pywebview.api.get_system_appearance() : Promise.resolve('light')
       };
 
       window.addEventListener('pywebviewready', () => {
@@ -373,18 +416,11 @@
           login: (d) => pyApi.login(d),
           register: (d) => pyApi.register(d),
           logout: () => pyApi.logout(),
-          forceSync: () => pyApi.force_sync()
+          forceSync: () => pyApi.force_sync(),
+          getSystemAppearance: () => pyApi.get_system_appearance()
         };
         loadData();
       });
-
-      let isLogin = true,
-        currentUser = null,
-        fullHistory = [],
-        filteredHistory = [],
-        localSelectedIndex = 0,
-        lastGTime = 0,
-        i18n = {};
 
       const formatDate = (timestamp) => {
         const date = new Date(timestamp * 1000);
@@ -423,37 +459,38 @@
         return value;
       };
 
-      const historyView = document.getElementById('history-view'),
-        settingsView = document.getElementById('settings-view'),
-        authForm = document.getElementById('auth-form'),
-        helpView = document.getElementById('help-view');
-      const settingsToggle = document.getElementById('settings-toggle'),
-        helpToggle = document.getElementById('help-toggle'),
-        minimizeBtn = document.getElementById('minimize-btn'),
-        quitBtn = document.getElementById('quit-btn'),
-        settingsBack = document.getElementById('settings-back'),
-        authBack = document.getElementById('auth-back'),
-        helpClose = document.getElementById('help-close');
-      const formTitle = document.getElementById('form-title'),
-        submitBtn = document.getElementById('submit-btn'),
-        toggleLink = document.getElementById('toggle-link'),
-        status = document.getElementById('status');
-      const authTriggerBtn = document.getElementById('auth-trigger-btn'),
-        logoutBtn = document.getElementById('logout-btn'),
-        userEmailDisplay = document.getElementById('user-email'),
-        syncStatusDisplay = document.getElementById('sync-status');
-      const soundToggle = document.getElementById('sound-toggle'),
-        statsToggle = document.getElementById('stats-toggle'),
-        appearanceSelect = document.getElementById('appearance-select'),
-        cleanupStrategy = document.getElementById('cleanup-strategy'),
-        cleanupValue = document.getElementById('cleanup-value');
+      const loadData = async () => {
+        try {
+          i18n = await window.api.getTranslations();
 
-      const shortcutInput = document.getElementById('shortcut-input'),
-        pinShortcutInput = document.getElementById('pin-shortcut-input'),
-        saveShortcutBtn = document.getElementById('save-shortcut-btn'),
-        shortcutStatus = document.getElementById('shortcut-status');
-      const historyList = document.getElementById('history-list'),
-        searchInput = document.getElementById('search-input');
+          document.querySelectorAll('[data-i18n]').forEach(el => {
+            el.innerText = translate(el.getAttribute('data-i18n'));
+          });
+          document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            el.placeholder = translate(el.getAttribute('data-i18n-placeholder'));
+          });
+          document.querySelectorAll('[data-i18n-title]').forEach(el => {
+            el.title = translate(el.getAttribute('data-i18n-title'));
+          });
+          
+          const shortcuts = await window.api.getShortcut();
+          shortcutInput.value = shortcuts.open_picker || '';
+          pinShortcutInput.value = shortcuts.toggle_pin || '';
+
+          const settings = await window.api.getSettings();
+          soundToggle.checked = settings.sound_enabled;
+          statsToggle.checked = settings.show_stats;
+          syncToggle.checked = settings.auto_sync;
+          if (appearanceSelect) appearanceSelect.value = settings.appearance || 'system';
+          cleanupStrategy.value = settings.cleanup_strategy || 'limit';
+          cleanupValue.value = settings.cleanup_value || 100;
+          
+          fullHistory = await window.api.getHistory();
+          renderHistory();
+        } catch (e) {
+          console.error("Failed to load data:", e);
+        }
+      };
 
       const renderHistory = (filter = '') => {
         historyList.innerHTML = '';
@@ -549,6 +586,149 @@
         renderHistory(e.target.value);
       };
 
+      settingsToggle.onclick = () => {
+        settingsView.classList.remove('hidden');
+      };
+
+      settingsBack.onclick = () => {
+        settingsView.classList.add('hidden');
+      };
+
+      authTriggerBtn.onclick = () => {
+        authForm.classList.remove('hidden');
+      };
+
+      authBack.onclick = () => {
+        authForm.classList.add('hidden');
+      };
+
+      helpToggle.onclick = () => {
+        helpView.classList.toggle('hidden');
+      };
+
+      helpClose.onclick = () => {
+        helpView.classList.add('hidden');
+      };
+
+      minimizeBtn.onclick = () => window.api.minimize();
+      quitBtn.onclick = () => window.api.quit();
+
+      saveShortcutBtn.onclick = async () => {
+        const openPicker = shortcutInput.value.trim();
+        const togglePin = pinShortcutInput.value.trim();
+        
+        saveShortcutBtn.disabled = true;
+        shortcutStatus.innerText = 'Updating...';
+        
+        const res = await window.api.updateShortcut({ 
+          open_picker: openPicker, 
+          toggle_pin: togglePin 
+        });
+        
+        shortcutStatus.innerText = res.success ? 'Updated!' : 'Error: ' + res.error;
+        shortcutStatus.className =
+          'text-[10px] mt-2 ' + (res.success ? 'text-success' : 'text-danger');
+        
+        setTimeout(() => {
+          shortcutStatus.innerText = '';
+          saveShortcutBtn.disabled = false;
+        }, 2000);
+      };
+
+      soundToggle.onchange = async () => {
+        await window.api.updateSettings({ sound_enabled: soundToggle.checked });
+      };
+
+      statsToggle.onchange = async () => {
+        await window.api.updateSettings({ show_stats: statsToggle.checked });
+        renderHistory(searchInput.value);
+      };
+
+      if (appearanceSelect) {
+        appearanceSelect.onchange = async () => {
+          await window.api.updateSettings({ appearance: appearanceSelect.value });
+          applyTheme(appearanceSelect.value);
+        };
+      }
+
+      syncToggle.onchange = async () => {
+        await window.api.updateSettings({ auto_sync: syncToggle.checked });
+      };
+
+      forceSyncBtn.onclick = async () => {
+        forceSyncBtn.disabled = true;
+        const originalText = forceSyncBtn.innerText;
+        forceSyncBtn.innerText = translate('SETTINGS.SYNCING');
+        
+        const res = await window.api.forceSync();
+        
+        if (res.success) {
+            forceSyncBtn.innerText = translate('SETTINGS.SYNCED');
+            setTimeout(() => {
+                forceSyncBtn.innerText = originalText;
+                forceSyncBtn.disabled = false;
+            }, 2000);
+            fullHistory = await window.api.getHistory();
+            renderHistory(searchInput.value);
+        } else {
+            forceSyncBtn.innerText = 'Error!';
+            setTimeout(() => {
+                forceSyncBtn.innerText = originalText;
+                forceSyncBtn.disabled = false;
+            }, 2000);
+        }
+      };
+
+      cleanupStrategy.onchange = async () => {
+        await window.api.updateSettings({ cleanup_strategy: cleanupStrategy.value });
+      };
+
+      cleanupValue.oninput = async () => {
+        if (cleanupValue.value) {
+            await window.api.updateSettings({ cleanup_value: parseInt(cleanupValue.value) });
+        }
+      };
+
+      logoutBtn.onclick = async () => {
+        await window.api.logout();
+        currentUser = null;
+        userEmailDisplay.innerText = 'Guest';
+        syncStatusDisplay.innerText = 'Offline mode: local storage';
+        authTriggerBtn.classList.remove('hidden');
+        logoutBtn.classList.add('hidden');
+        loadData();
+        settingsBack.click();
+      };
+
+      toggleLink.onclick = () => {
+        isLogin = !isLogin;
+        formTitle.innerText = isLogin ? 'Login' : 'Register';
+        submitBtn.innerText = isLogin ? 'Login' : 'Register';
+        toggleLink.innerText = isLogin ? '[+] No account? Register' : '[+] Have account? Login';
+      };
+
+      submitBtn.onclick = async () => {
+        const email = document.getElementById('email').value,
+          pass = document.getElementById('password').value;
+        status.classList.remove('hidden');
+        status.innerText = 'Processing...';
+        const res = isLogin
+          ? await window.api.login({ email, password: pass })
+          : await window.api.register({ email, password: pass });
+        if (res.success) {
+          currentUser = res.user;
+          authForm.classList.add('hidden');
+          userEmailDisplay.innerText = res.user.email;
+          syncStatusDisplay.innerText = 'Cloud sync active';
+          authTriggerBtn.classList.add('hidden');
+          logoutBtn.classList.remove('hidden');
+          loadData();
+        } else {
+          status.innerText = 'Error: ' + res.error;
+          status.classList.add('text-danger');
+        }
+      };
+
       document.addEventListener('keydown', (e) => {
         const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
         if (e.key === '?' && !isInput) {
@@ -629,6 +809,7 @@
           applyTheme('system');
         }
       });
+      loadData();
     </script>
 
   </body>

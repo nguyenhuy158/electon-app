@@ -24,7 +24,7 @@ class AppConstants:
     }
     SHORTCUTS = {"OPEN_PICKER": "<cmd>+<shift>+v", "TOGGLE_PIN": "Control+Enter"}
     SOUND = {"ENABLED": True}
-    UI_SETTINGS = {"SHOW_STATS": True}
+    UI_SETTINGS = {"SHOW_STATS": True, "APPEARANCE": "system"}
     LOCALE = "en"
     LOGGING = {
         "LOG_FILE": "~/.quickclip/app.log",
