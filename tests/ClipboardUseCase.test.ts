@@ -1,10 +1,10 @@
-import { ClipboardUseCase } from '../src/application/use-cases/ClipboardUseCase';
-import { ClipboardRepository } from '../src/application/ports/ClipboardRepository';
-import { ClipboardService } from '../src/application/ports/ClipboardService';
-import { NotificationService } from '../src/application/ports/NotificationService';
-import { User } from '../src/domain/models/User';
-import { Clip } from '../src/domain/models/Clip';
-import { i18n } from '../src/domain/i18n';
+import { ClipboardUseCase } from '../src/main/application/use-cases/ClipboardUseCase';
+import { ClipboardRepository } from '../src/main/application/ports/ClipboardRepository';
+import { ClipboardService } from '../src/main/application/ports/ClipboardService';
+import { NotificationService } from '../src/main/application/ports/NotificationService';
+import { User } from '../src/main/domain/models/User';
+import { Clip } from '../src/main/domain/models/Clip';
+import { i18n } from '../src/main/domain/i18n';
 
 describe('ClipboardUseCase', () => {
   let mockRepo: jest.Mocked<ClipboardRepository>;

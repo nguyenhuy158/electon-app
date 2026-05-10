@@ -1,4 +1,4 @@
-import { Clip } from '../src/domain/models/Clip';
+import { Clip } from '../src/main/domain/models/Clip';
 
 describe('Clip Model', () => {
   it('should create a clip instance with correct properties', () => {

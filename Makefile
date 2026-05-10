@@ -1,4 +1,4 @@
-.PHONY: help install start test clean i s t c lint format coverage l f cov sc tw w b build pkg package
+.PHONY: help install start test clean i s t c lint format coverage l f cov sc tw w b build pkg package dev
 
 # Default target
 help:
@@ -6,8 +6,8 @@ help:
 	@echo ""
 	@echo "Targets:"
 	@echo "  install  (i)     Install dependencies"
+	@echo "  dev      (dev/s) Start app in dev mode (Vite HMR)"
 	@echo "  build    (b)     Build the application"
-	@echo "  start    (s)     Start the application"
 	@echo "  package  (pkg)   Package for macOS (.dmg)"
 	@echo "  test     (t)     Run tests"
 	@echo "  test-watch (tw/w) Run tests in watch mode"
@@ -36,16 +36,16 @@ pkg: package
 install:
 	pnpm install
 
-# Start the application (Builds and then runs)
-start:
-	@$(MAKE) build
-	pnpm start
+# Start the application in development mode
+dev:
+	pnpm run dev
 
-# Build JS and CSS
+# Start the application (Alias for dev)
+s: dev
+
+# Build the application
 build:
-	@echo "Building project..."
-	@pnpm run build
-	@echo "Build complete."
+	pnpm run build
 
 
 # Package for macOS

@@ -1,7 +1,7 @@
-import { AuthUseCase } from '../src/application/use-cases/AuthUseCase';
-import { UserRepository } from '../src/application/ports/UserRepository';
-import { User } from '../src/domain/models/User';
-import { i18n } from '../src/domain/i18n';
+import { AuthUseCase } from '../src/main/application/use-cases/AuthUseCase';
+import { UserRepository } from '../src/main/application/ports/UserRepository';
+import { User } from '../src/main/domain/models/User';
+import { i18n } from '../src/main/domain/i18n';
 
 jest.mock('@neondatabase/auth', () => ({
   createAuthClient: jest.fn(() => ({
