@@ -185,6 +185,32 @@
     </div>
 
     <script>
+      // Initial mock to prevent errors before pywebview is ready
+      window.api = {
+        onHistoryUpdate: (cb) => { window.onHistoryUpdate = cb; },
+        onFocusSearch: (cb) => { window.onFocusSearch = cb; },
+        getHistory: () => Promise.resolve([]),
+        getShortcut: () => Promise.resolve(''),
+        updateShortcut: () => Promise.resolve({ success: true }),
+        copyToClipboard: (t) => { if (window.pywebview) window.pywebview.api.copyToClipboard(t); },
+        login: (d) => window.pywebview ? window.pywebview.api.login(d) : Promise.resolve({ success: true }),
+        register: (d) => window.pywebview ? window.pywebview.api.register(d) : Promise.resolve({ success: true }),
+        logout: () => window.pywebview ? window.pywebview.api.logout() : Promise.resolve(true)
+      };
+
+      window.addEventListener('pywebviewready', () => {
+        const pyApi = window.pywebview.api;
+        // Map pywebview api to window.api while preserving listeners
+        const oldApi = window.api;
+        window.api = {
+          ...pyApi,
+          onHistoryUpdate: oldApi.onHistoryUpdate,
+          onFocusSearch: oldApi.onFocusSearch
+        };
+        // Trigger initial load if needed
+        loadData();
+      });
+
       let isLogin = true,
         currentUser = null,
         fullHistory = [],

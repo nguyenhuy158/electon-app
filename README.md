@@ -1,24 +1,28 @@
-# QuickClip
+# QuickClip (PyWebView Edition)
 
-Electron clipboard manager with cloud sync.
+Lightweight clipboard manager for macOS using PyWebView.
+
+## Why PyWebView?
+- **Small size**: Uses system WKWebView (~10MB vs >100MB Electron).
+- **Native performance**: Native macOS clipboard integration via PyObjC.
+- **Low memory**: Minimal overhead.
 
 ## Setup
 
 ```bash
-pnpm install
-cp .env.example .env
+# Install dependencies
+make install
 ```
 
 ## Commands
 
-- `make s`: Start app
-- `make t`: Run tests
-- `make l`: Lint code
-- `make f`: Format code
+- `make run`: Start development mode
+- `make build`: Build standalone .app for macOS
 
 ## Architecture
 
-Hexagonal (Domain, Application, Infrastructure).
+- **Backend**: Python 3 + PyWebView + PyObjC.
+- **Frontend**: HTML/CSS/JS (Tailwind CSS).
 
 ## Ownership
 

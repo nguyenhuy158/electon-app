@@ -1,0 +1,6 @@
+pywebview
+pyobjc-core
+pyobjc-framework-Cocoa
+pyobjc-framework-Quartz
+python-dotenv
+psycopg2-binary

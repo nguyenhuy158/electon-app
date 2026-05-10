@@ -1,85 +1,24 @@
-.PHONY: help install start test clean i s t c lint format coverage l f cov sc tw w b build pkg package dev
+.PHONY: install run build clean build-ui
 
-# Default target
-help:
-	@echo "Usage: make [target]"
-	@echo ""
-	@echo "Targets:"
-	@echo "  install  (i)     Install dependencies"
-	@echo "  dev      (dev/s) Start app in dev mode (Vite HMR)"
-	@echo "  build    (b)     Build the application"
-	@echo "  package  (pkg)   Package for macOS (.dmg)"
-	@echo "  test     (t)     Run tests"
-	@echo "  test-watch (tw/w) Run tests in watch mode"
-	@echo "  lint     (l)     Lint code"
-	@echo "  format   (f)     Format code"
-	@echo "  coverage (cov)   Run tests with coverage"
-	@echo "  serve-cov (sc)   Serve coverage report in browser"
-	@echo "  clean    (c)     Clean build artifacts and node_modules"
-	@echo "  help             Show this help message"
-
-# Shortcuts
-i: install
-s: start
-t: test
-c: clean
-l: lint
-f: format
-cov: coverage
-sc: serve-cov
-tw: test-watch
-w: test-watch
-b: build
-pkg: package
-
-# Install dependencies
 install:
+	pip install -r requirements.txt
 	pnpm install
 
-# Start the application in development mode
-dev:
-	pnpm run dev
+build-ui:
+	npx tailwindcss -i src/renderer/src/styles.css -o src/renderer/styles.css
 
-# Start the application (Alias for dev)
-s: dev
+run: build-ui
+	python python/app.py
 
-# Build the application
-build:
-	pnpm run build
+# Smallest size build for macOS using PyInstaller or just zip
+build: build-ui
+	@echo "Building for macOS..."
+	pip install pyinstaller
+	pyinstaller --noconfirm --onefile --windowed --name "QuickClip" \
+		--add-data "src/renderer/index.html:src/renderer" \
+		--add-data "src/renderer/styles.css:src/renderer" \
+		python/app.py
+	@echo "Build complete. Check dist/QuickClip.app"
 
-
-# Package for macOS
-package:
-	pnpm run package
-
-# Run tests
-test:
-	pnpm test
-
-# Run tests in watch mode
-test-watch:
-	pnpm run test:watch
-
-# Lint code
-lint:
-	pnpm run lint
-
-# Format code
-format:
-	pnpm run format
-
-# Run tests with coverage
-coverage:
-	pnpm run coverage
-
-# Serve coverage report
-serve-cov:
-	open coverage/lcov-report/index.html
-
-# Clean build artifacts and node_modules
 clean:
-	rm -rf node_modules
-	rm -rf dist
-	rm -rf out
-	rm -rf coverage
-
+	rm -rf build dist *.spec
