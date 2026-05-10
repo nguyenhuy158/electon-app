@@ -19,19 +19,20 @@ class ClipboardUseCase:
     def _sort_history(self):
         self.history.sort(key=lambda x: (not x.is_pinned, -x.timestamp))
 
-    def add_to_history(self, text):
+    def add_to_history(self, text, source_app="Unknown"):
         if not text:
             return False
 
         existing_clip = next((c for c in self.history if c.content == text), None)
 
         if existing_clip:
-            # Update timestamp to bring to top of its group
+            # Update timestamp and source app to bring to top of its group
             logger.debug(f"Updating existing clip: {text[:20]}...")
             existing_clip.timestamp = time.time()
+            existing_clip.source_app = source_app
         else:
             logger.debug(f"Adding new clip: {text[:20]}...")
-            new_clip = Clip(content=text)
+            new_clip = Clip(content=text, source_app=source_app)
             self.history.append(new_clip)
 
         self._sort_history()

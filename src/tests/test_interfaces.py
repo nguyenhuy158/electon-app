@@ -8,6 +8,9 @@ class MockService(ClipboardService):
     def get_clipboard_content(self) -> str:
         return "test"
 
+    def get_active_app(self) -> str:
+        return "MockApp"
+
 
 class MockRepo(ClipboardRepository):
     def save_all(self, clips: list):

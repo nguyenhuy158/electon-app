@@ -83,6 +83,16 @@ class API:
             AppConstants.SHORTCUTS["TOGGLE_PIN"] = data["toggle_pin"]
         return {"success": True}
 
+    def get_settings(self):
+        return {
+            "sound_enabled": AppConstants.SOUND["ENABLED"],
+        }
+
+    def update_settings(self, data):
+        if "sound_enabled" in data:
+            AppConstants.SOUND["ENABLED"] = data["sound_enabled"]
+        return {"success": True}
+
     def login(self, data):
         return {"success": True, "user": {"email": data["email"]}}
 
@@ -102,8 +112,11 @@ def monitor_clipboard(window, use_case):
         if current_count != last_count:
             last_count = current_count
             text = clipboard_service.get_clipboard_content()
-            logger.debug(f"Clipboard change detected: {len(text) if text else 0} chars")
-            if use_case.add_to_history(text):
+            source_app = clipboard_service.get_active_app()
+            logger.debug(
+                f"Clipboard change detected from {source_app}: {len(text) if text else 0} chars"
+            )
+            if use_case.add_to_history(text, source_app):
                 history_json = json.dumps(use_case.get_history())
                 window.evaluate_js(
                     f"if (window.onHistoryUpdate) window.onHistoryUpdate({history_json})"
@@ -161,10 +174,7 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=log_level,
         format=AppConstants.LOGGING["FORMAT"],
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler(sys.stdout)
-        ]
+        handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stdout)],
     )
     logger.info(f"Starting QuickClip with log level: {log_level}")
 

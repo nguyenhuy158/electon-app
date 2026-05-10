@@ -91,13 +91,16 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'j') {
       localSelectedIndex = (localSelectedIndex + 1) % (filteredHistory.length || 1);
       renderHistory(searchInput.value);
+      lastGTime = 0;
     } else if (e.key === 'k') {
       localSelectedIndex =
         localSelectedIndex <= 0 ? (filteredHistory.length || 1) - 1 : localSelectedIndex - 1;
       renderHistory(searchInput.value);
+      lastGTime = 0;
     } else if (e.key === 'G') {
       localSelectedIndex = filteredHistory.length - 1;
       renderHistory(searchInput.value);
+      lastGTime = 0;
     } else if (e.key === 'g') {
       const now = Date.now();
       if (now - lastGTime < 500) {
@@ -107,8 +110,10 @@ document.addEventListener('keydown', (e) => {
       } else {
         lastGTime = now;
       }
-    } else if (e.key === 'Enter' && localSelectedIndex !== -1)
+    } else if (e.key === 'Enter' && localSelectedIndex !== -1) {
+      lastGTime = 0;
       (window as any).api.copyToClipboard(filteredHistory[localSelectedIndex]);
+    }
   } else if (e.key === 'Enter' && filteredHistory.length > 0) {
     (window as any).api.copyToClipboard(
       filteredHistory[localSelectedIndex === -1 ? 0 : localSelectedIndex]

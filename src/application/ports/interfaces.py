@@ -11,6 +11,10 @@ class ClipboardService(ABC):
     def get_clipboard_content(self) -> str:
         pass
 
+    @abstractmethod
+    def get_active_app(self) -> str:
+        pass
+
 
 class ClipboardRepository(ABC):
     @abstractmethod

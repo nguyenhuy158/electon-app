@@ -50,6 +50,8 @@ MESSAGES = {
         "SELECT": "Select",
         "NAVIGATE": "Navigate",
         "COPY": "Copy",
+        "SOUND_EFFECTS": "Sound Effects",
+        "ENABLE_SOUND": "Enable sound effects",
     },
     "HISTORY": {
         "SEARCH_PLACEHOLDER": "Search clipboard...",

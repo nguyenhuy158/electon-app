@@ -9,6 +9,7 @@ class Clip:
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     is_pinned: bool = False
     timestamp: float = field(default_factory=time.time)
+    source_app: str = "Unknown"
 
     def to_dict(self):
         return {
@@ -16,6 +17,7 @@ class Clip:
             "content": self.content,
             "is_pinned": self.is_pinned,
             "timestamp": self.timestamp,
+            "source_app": self.source_app,
         }
 
     @staticmethod
@@ -28,4 +30,5 @@ class Clip:
             content=data.get("content", ""),
             is_pinned=data.get("is_pinned", False),
             timestamp=data.get("timestamp", time.time()),
+            source_app=data.get("source_app", "Unknown"),
         )

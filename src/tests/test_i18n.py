@@ -19,3 +19,17 @@ def test_i18n_locale_switch():
 
 def test_i18n_fallback():
     assert i18n.t("NON_EXISTENT.KEY") == "NON_EXISTENT.KEY"
+
+
+def test_get_locale():
+    i18n.set_locale("en")
+    assert i18n.get_locale() == "en"
+    i18n.set_locale("vi")
+    assert i18n.get_locale() == "vi"
+    i18n.set_locale("en")
+
+
+def test_t_formatting_error():
+    # SETTINGS.ERROR is "Error: {error}"
+    # If we provide a kwarg but not the one needed, it should catch KeyError
+    assert i18n.t("SETTINGS.ERROR", wrong_key="val") == "Error: {error}"

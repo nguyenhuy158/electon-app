@@ -50,6 +50,8 @@ MESSAGES = {
         "SELECT": "Chọn",
         "NAVIGATE": "Di chuyển",
         "COPY": "Sao chép",
+        "SOUND_EFFECTS": "Âm thanh",
+        "ENABLE_SOUND": "Bật âm thanh hệ thống",
     },
     "HISTORY": {
         "SEARCH_PLACEHOLDER": "Tìm kiếm trong bộ nhớ tạm...",

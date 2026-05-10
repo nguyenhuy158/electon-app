@@ -71,10 +71,10 @@
   }
 
   .history-item {
-    padding: 12px;
+    padding: 11px;
     background-color: var(--color-surface-card);
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--radius-sm);
+    border: 2px solid var(--color-hairline);
+    border-radius: var(--radius-md);
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -88,6 +88,5 @@
   .history-item.selected {
     border-color: var(--color-accent);
     background-color: rgba(0, 122, 255, 0.05);
-    box-shadow: 0 0 0 1px var(--color-accent);
   }
 }

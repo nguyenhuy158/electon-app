@@ -111,6 +111,17 @@ def test_toggle_pin():
     mock_repo.save_all.assert_called()
 
 
+def test_toggle_pin_not_found():
+    mock_service = MagicMock()
+    mock_repo = MagicMock()
+    mock_repo.get_all.return_value = [Clip(content="clip1")]
+
+    use_case = ClipboardUseCase(mock_service, mock_repo)
+    result = use_case.toggle_pin("non-existent-id")
+
+    assert result is False
+
+
 def test_copy_to_clipboard():
     mock_service = MagicMock()
     mock_repo = MagicMock()
