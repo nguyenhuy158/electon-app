@@ -1,4 +1,4 @@
-.PHONY: help install run build clean build-ui s i b c
+.PHONY: help install run build clean build-ui s i b c t l f cov
 
 help:
 	@echo "Usage: make [target]"
@@ -8,6 +8,10 @@ help:
 	@echo "  run (s)       Build UI and start the application in development mode"
 	@echo "  build (b)     Build a standalone macOS application (.app)"
 	@echo "  build-ui      Compile Tailwind CSS"
+	@echo "  test (t)      Run Python tests using pytest"
+	@echo "  lint (l)      Lint code using ruff"
+	@echo "  format (f)    Format code using ruff"
+	@echo "  cov           Run tests with coverage report"
 	@echo "  clean (c)     Remove build artifacts"
 	@echo "  help          Show this help message"
 
@@ -16,23 +20,32 @@ i: install
 s: run
 b: build
 c: clean
+t: test
+l: lint
+f: format
 
 install:
 	uv venv .venv
 	uv pip install -r requirements.txt
 	pnpm install
 
-# Shortcuts
-i: install
-s: run
-b: build
-c: clean
-
 build-ui:
 	npx tailwindcss -i src/renderer/src/styles.css -o src/renderer/styles.css
 
 run: build-ui
 	./.venv/bin/python src/main/index.py
+
+test:
+	./.venv/bin/pytest src/main
+
+lint:
+	./.venv/bin/ruff check .
+
+format:
+	./.venv/bin/ruff format .
+
+cov:
+	./.venv/bin/pytest --cov=src/main src/main --cov-report=term-missing
 
 # Smallest size build for macOS using PyInstaller or just zip
 build: build-ui
