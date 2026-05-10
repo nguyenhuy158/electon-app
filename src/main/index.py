@@ -6,14 +6,12 @@ import sys
 import json
 from AppKit import NSPasteboard, NSStringPboardType
 
-# Hexagonal Imports
 from domain.constants.index import AppConstants
 from domain.i18n.index import i18n
 
 def get_resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
-    # Since we are in src/main/index.py, we need to go up two levels to reach root
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', relative_path)
 
 class API:
@@ -71,7 +69,6 @@ def monitor_clipboard(window, api):
         time.sleep(AppConstants.CLIPBOARD["POLLING_INTERVAL_MS"] / 1000.0)
 
 if __name__ == '__main__':
-    # Set Python path to src/main for imports
     sys.path.append(os.path.dirname(os.path.abspath(__file__)))
     
     api = API()

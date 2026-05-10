@@ -185,7 +185,6 @@
     </div>
 
     <script>
-      // Initial mock to prevent errors before pywebview is ready
       window.api = {
         onHistoryUpdate: (cb) => { window.onHistoryUpdate = cb; },
         onFocusSearch: (cb) => { window.onFocusSearch = cb; },
@@ -200,14 +199,12 @@
 
       window.addEventListener('pywebviewready', () => {
         const pyApi = window.pywebview.api;
-        // Map pywebview api to window.api while preserving listeners
         const oldApi = window.api;
         window.api = {
           ...pyApi,
           onHistoryUpdate: oldApi.onHistoryUpdate,
           onFocusSearch: oldApi.onFocusSearch
         };
-        // Trigger initial load if needed
         loadData();
       });
 
