@@ -45,6 +45,14 @@
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
         <button
+          id="help-toggle"
+          class="p-2 hover:bg-surface-soft rounded-full transition-all cursor-pointer text-mute hover:text-accent"
+          data-i18n-title="HELP.TITLE"
+          title="Help"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </button>
+        <button
           id="settings-toggle"
           class="p-2 hover:bg-surface-soft rounded-full transition-all cursor-pointer text-mute hover:text-accent"
           data-i18n-title="SETTINGS.TITLE"
@@ -207,6 +215,51 @@
         
         <div id="status" class="mt-4 p-3 rounded-xl hidden text-xs text-center font-medium bg-danger/5 text-danger border border-danger/10"></div>
       </div>
+
+      <!-- Help View Overlay -->
+      <div id="help-view" class="hidden absolute inset-0 bg-canvas/95 backdrop-blur-sm z-50 flex flex-col p-8 items-center justify-center">
+        <div class="w-full max-w-xs space-y-6">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-lg font-semibold text-accent" data-i18n="HELP.TITLE">Keyboard Shortcuts</h2>
+            <button id="help-close" class="p-2 hover:bg-surface-soft rounded-full transition-colors cursor-pointer text-mute hover:text-accent">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
+              <span class="text-mute" data-i18n="HELP.SHOW_HELP">Show/Hide Help</span>
+              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">?</kbd>
+            </div>
+            <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
+              <span class="text-mute" data-i18n="HELP.SEARCH">Focus Search</span>
+              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">/</kbd>
+            </div>
+            <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
+              <span class="text-mute" data-i18n="HELP.NAVIGATE">Navigate List</span>
+              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">j / k</kbd>
+            </div>
+            <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
+              <span class="text-mute" data-i18n="HELP.SELECT">Select Item</span>
+              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">1-9</kbd>
+            </div>
+            <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
+              <span class="text-mute" data-i18n="HELP.COPY">Copy Selection</span>
+              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">Enter</kbd>
+            </div>
+            <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
+              <span class="text-mute" data-i18n="HELP.PIN">Toggle Pin</span>
+              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">Cmd+Enter</kbd>
+            </div>
+            <div class="flex justify-between text-xs border-b border-hairline/50 pb-2">
+              <span class="text-mute" data-i18n="HELP.CLOSE">Close/Back</span>
+              <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">Esc</kbd>
+            </div>
+          </div>
+          <div class="text-center pt-4">
+            <p class="text-[11px] text-mute" data-i18n="HELP.PRESS_TO_CLOSE">Press ? to close</p>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script>
@@ -218,6 +271,7 @@
         updateShortcut: (s) => window.pywebview ? window.pywebview.api.update_shortcut(s) : Promise.resolve({ success: true }),
         copyToClipboard: (t) => { if (window.pywebview) window.pywebview.api.copy_to_clipboard(t); },
         togglePin: (id) => window.pywebview ? window.pywebview.api.toggle_pin(id) : Promise.resolve(true),
+        getTranslations: () => window.pywebview ? window.pywebview.api.get_translations() : Promise.resolve({}),
         minimize: () => window.pywebview ? window.pywebview.api.minimize() : Promise.resolve(true),
         quit: () => window.pywebview ? window.pywebview.api.quit() : Promise.resolve(true),
         login: (d) => window.pywebview ? window.pywebview.api.login(d) : Promise.resolve({ success: true }),
@@ -236,6 +290,7 @@
           getShortcut: () => pyApi.get_shortcut(),
           updateShortcut: (s) => pyApi.update_shortcut(s),
           togglePin: (id) => pyApi.toggle_pin(id),
+          getTranslations: () => pyApi.get_translations(),
           minimize: () => pyApi.minimize(),
           quit: () => pyApi.quit(),
           copyToClipboard: (t) => {
@@ -253,15 +308,29 @@
         currentUser = null,
         fullHistory = [],
         filteredHistory = [],
-        localSelectedIndex = 0;
+        localSelectedIndex = 0,
+        i18n = {};
+
+      const translate = (key, params = {}) => {
+        const keys = key.split('.');
+        let value = i18n;
+        for (const k of keys) { value = value ? value[k] : null; }
+        if (!value) return key;
+        for (const p in params) { value = value.replace(`{${p}}`, params[p]); }
+        return value;
+      };
+
       const historyView = document.getElementById('history-view'),
         settingsView = document.getElementById('settings-view'),
-        authForm = document.getElementById('auth-form');
+        authForm = document.getElementById('auth-form'),
+        helpView = document.getElementById('help-view');
       const settingsToggle = document.getElementById('settings-toggle'),
+        helpToggle = document.getElementById('help-toggle'),
         minimizeBtn = document.getElementById('minimize-btn'),
         quitBtn = document.getElementById('quit-btn'),
         settingsBack = document.getElementById('settings-back'),
-        authBack = document.getElementById('auth-back');
+        authBack = document.getElementById('auth-back'),
+        helpClose = document.getElementById('help-close');
       const formTitle = document.getElementById('form-title'),
         submitBtn = document.getElementById('submit-btn'),
         toggleLink = document.getElementById('toggle-link'),
@@ -284,12 +353,12 @@
         );
         if (fullHistory.length === 0) {
           historyList.innerHTML =
-            '<div class="text-mute text-center py-8 text-[13px] italic">[History empty]</div>';
+            `<div class="text-mute text-center py-8 text-[13px] italic">${translate('HISTORY.EMPTY')}</div>`;
           return;
         }
         if (filteredHistory.length === 0) {
           historyList.innerHTML =
-            '<div class="text-mute text-center py-8 text-[13px] italic">[No matches]</div>';
+            `<div class="text-mute text-center py-8 text-[13px] italic">${translate('HISTORY.NO_MATCHES')}</div>`;
           return;
         }
         if (localSelectedIndex >= filteredHistory.length)
@@ -300,13 +369,13 @@
             isSel = i === localSelectedIndex,
             isPinned = itemData.is_pinned;
           item.className = `p-3 bg-surface-card border rounded-sm cursor-pointer group transition-all flex items-start gap-3 ${isSel ? 'border-accent ring-1 ring-accent' : 'border-hairline hover:border-accent'}`;
-          item.innerHTML = `
+            item.innerHTML = `
             <span class="text-[10px] ${isSel ? 'text-accent font-bold' : 'text-mute'} font-mono mt-0.5">${i + 1}</span>
             <div class="flex-1 min-w-0">
               <div class="text-[13px] ${isSel ? 'text-accent font-bold' : 'text-primary'} break-words whitespace-pre-wrap">${itemData.content.length > 100 ? itemData.content.substring(0, 97) + '...' : itemData.content}</div>
             </div>
             <div class="flex items-center gap-2 mt-0.5">
-               <button class="pin-btn p-1 hover:bg-surface-soft rounded-full transition-colors ${isPinned ? 'text-accent' : 'text-mute opacity-0 group-hover:opacity-100'}" title="${isPinned ? 'Unpin' : 'Pin'}">
+               <button class="pin-btn p-1 hover:bg-surface-soft rounded-full transition-colors ${isPinned ? 'text-accent' : 'text-mute opacity-0 group-hover:opacity-100'}" title="${isPinned ? translate('HISTORY.UNPIN') : translate('HISTORY.PIN')}">
                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="${isPinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a2 2 0 0 0 1.27 1.87L12 18.22l7.73-6.35A2 2 0 0 0 21 10z"></path><line x1="12" y1="18" x2="12" y2="22"></line></svg>
                </button>
                <div class="text-[10px] ${isSel ? 'text-accent' : 'text-mute'} group-hover:text-accent font-mono">${isSel ? '►' : '↵'}</div>
@@ -332,13 +401,21 @@
       };
 
       document.addEventListener('keydown', (e) => {
-        if (e.key === '/' && document.activeElement !== searchInput) {
+        const isInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+        if (e.key === '?' && !isInput) {
           e.preventDefault();
+          helpView.classList.toggle('hidden');
+          return;
+        }
+        if (e.key === '/' && !isInput) {
+          e.preventDefault();
+          helpView.classList.add('hidden');
           searchInput.focus();
           return;
         }
         if (e.key === 'Escape') {
-          if (document.activeElement === searchInput) searchInput.blur();
+          if (!helpView.classList.contains('hidden')) helpView.classList.add('hidden');
+          else if (isInput) document.activeElement.blur();
           else if (!authForm.classList.contains('hidden')) authBack.click();
           else if (!settingsView.classList.contains('hidden')) settingsBack.click();
           else {
@@ -347,12 +424,12 @@
           }
           return;
         }
-        if (e.key >= '1' && e.key <= '9' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (e.key >= '1' && e.key <= '9' && !e.ctrlKey && !e.metaKey && !e.altKey && !isInput) {
           const idx = parseInt(e.key) - 1;
           if (filteredHistory[idx]) window.api.copyToClipboard(filteredHistory[idx].content);
           return;
         }
-        if (document.activeElement !== searchInput) {
+        if (!isInput) {
           if (e.key === 'j') {
             localSelectedIndex = (localSelectedIndex + 1) % (filteredHistory.length || 1);
             renderHistory(searchInput.value);
@@ -370,7 +447,7 @@
                 window.api.copyToClipboard(filteredHistory[localSelectedIndex].content);
             }
           }
-        } else if (e.key === 'Enter' && filteredHistory.length > 0) {
+        } else if (e.key === 'Enter' && document.activeElement === searchInput && filteredHistory.length > 0) {
           if (e.ctrlKey || e.metaKey) {
             window.api.togglePin(filteredHistory[localSelectedIndex === -1 ? 0 : localSelectedIndex].id);
           } else {
@@ -385,6 +462,7 @@
         historyView.classList.add('hidden');
         settingsView.classList.remove('hidden');
         settingsToggle.classList.add('hidden');
+        helpToggle.classList.add('hidden');
         minimizeBtn.classList.add('hidden');
         quitBtn.classList.add('hidden');
       };
@@ -392,13 +470,19 @@
         settingsView.classList.add('hidden');
         historyView.classList.remove('hidden');
         settingsToggle.classList.remove('hidden');
+        helpToggle.classList.remove('hidden');
         minimizeBtn.classList.remove('hidden');
         quitBtn.classList.remove('hidden');
       };
+      helpToggle.onclick = () => helpView.classList.toggle('hidden');
       minimizeBtn.onclick = () => window.api.minimize();
       quitBtn.onclick = () => window.api.quit();
       authTriggerBtn.onclick = () => authForm.classList.remove('hidden');
       authBack.onclick = () => authForm.classList.add('hidden');
+      helpClose.onclick = () => helpView.classList.add('hidden');
+      helpView.onclick = (e) => {
+        if (e.target === helpView) helpView.classList.add('hidden');
+      };
 
       window.api.onHistoryUpdate((h) => {
         fullHistory = h;
@@ -411,6 +495,24 @@
 
       const loadData = async () => {
         try {
+          i18n = await window.api.getTranslations();
+
+          document.querySelectorAll('[data-i18n]').forEach(el => {
+            el.innerText = translate(el.getAttribute('data-i18n'));
+          });
+          document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            el.placeholder = translate(el.getAttribute('data-i18n-placeholder'));
+          });
+          document.querySelectorAll('[data-i18n-title]').forEach(el => {
+            el.title = translate(el.getAttribute('data-i18n-title'));
+          });
+          
+          // Special case for HELP.PRESS_TO_CLOSE which has a param
+          const pressToClose = document.querySelector('[data-i18n="HELP.PRESS_TO_CLOSE"]');
+          if (pressToClose) {
+            pressToClose.innerText = translate('HELP.PRESS_TO_CLOSE', { key: '?' });
+          }
+
           const shortcuts = await window.api.getShortcut();
           shortcutInput.value = shortcuts.open_picker || '';
           pinShortcutInput.value = shortcuts.toggle_pin || '';

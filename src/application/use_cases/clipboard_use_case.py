@@ -1,5 +1,10 @@
+import logging
+import time
+
 from domain.constants.index import AppConstants
 from domain.models.clip import Clip
+
+logger = logging.getLogger(__name__)
 
 
 class ClipboardUseCase:
@@ -11,26 +16,29 @@ class ClipboardUseCase:
     def get_history(self):
         return [clip.to_dict() for clip in self.history]
 
+    def _sort_history(self):
+        self.history.sort(key=lambda x: (not x.is_pinned, -x.timestamp))
+
     def add_to_history(self, text):
         if not text:
             return False
 
-        # Check if text already exists in history (to move it to top)
         existing_clip = next((c for c in self.history if c.content == text), None)
 
         if existing_clip:
-            if self.history[0].content == text:
-                return False
-            self.history.remove(existing_clip)
-            self.history.insert(0, existing_clip)
+            # Update timestamp to bring to top of its group
+            logger.debug(f"Updating existing clip: {text[:20]}...")
+            existing_clip.timestamp = time.time()
         else:
+            logger.debug(f"Adding new clip: {text[:20]}...")
             new_clip = Clip(content=text)
-            self.history.insert(0, new_clip)
+            self.history.append(new_clip)
+
+        self._sort_history()
 
         # Apply limit while preserving pinned items
         limit = AppConstants.CLIPBOARD["DEFAULT_HISTORY_LIMIT"]
         if len(self.history) > limit:
-            # Keep pinned items and latest non-pinned items
             pinned = [c for c in self.history if c.is_pinned]
             unpinned = [c for c in self.history if not c.is_pinned]
             self.history = pinned + unpinned[: limit - len(pinned)]
@@ -42,8 +50,8 @@ class ClipboardUseCase:
         for clip in self.history:
             if clip.id == clip_id:
                 clip.is_pinned = not clip.is_pinned
-                # Re-sort: pinned items first, then by timestamp
-                self.history.sort(key=lambda x: (not x.is_pinned, -x.timestamp))
+                logger.debug(f"Toggled pin for clip {clip_id}: {clip.is_pinned}")
+                self._sort_history()
                 self.clipboard_repository.save_all(self.history)
                 return True
         return False

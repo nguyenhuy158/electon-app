@@ -65,4 +65,15 @@ MESSAGES = {
         "DB_INIT_FAILED": "Khởi tạo DB thất bại:",
         "SYNC_FAILED": "Đồng bộ thất bại:",
     },
+    "HELP": {
+        "TITLE": "Phím tắt bàn phím",
+        "SHOW_HELP": "Hiện/Ẩn trợ giúp",
+        "SEARCH": "Tìm kiếm",
+        "NAVIGATE": "Di chuyển danh sách",
+        "SELECT": "Chọn mục",
+        "COPY": "Sao chép lựa chọn",
+        "PIN": "Ghim/Bỏ ghim",
+        "CLOSE": "Đóng/Quay lại",
+        "PRESS_TO_CLOSE": "Nhấn {key} để đóng",
+    },
 }

@@ -1,10 +1,13 @@
 import json
+import logging
 import os
 from typing import List
 
 from application.ports.interfaces import ClipboardRepository
 from domain.constants.index import AppConstants
 from domain.models.clip import Clip
+
+logger = logging.getLogger(__name__)
 
 
 class JSONClipboardRepository(ClipboardRepository):
@@ -19,7 +22,7 @@ class JSONClipboardRepository(ClipboardRepository):
             with open(self.path, "w") as f:
                 json.dump(data, f)
         except Exception as e:
-            print(f"Error saving history: {e}")
+            logger.error(f"Error saving history: {e}")
 
     def get_all(self) -> List[Clip]:
         if os.path.exists(self.path):

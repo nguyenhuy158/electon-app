@@ -65,4 +65,15 @@ MESSAGES = {
         "DB_INIT_FAILED": "Failed to init DB:",
         "SYNC_FAILED": "Sync failed:",
     },
+    "HELP": {
+        "TITLE": "Keyboard Shortcuts",
+        "SHOW_HELP": "Show/Hide Help",
+        "SEARCH": "Focus Search",
+        "NAVIGATE": "Navigate List",
+        "SELECT": "Select Item",
+        "COPY": "Copy Selection",
+        "PIN": "Toggle Pin",
+        "CLOSE": "Close/Back",
+        "PRESS_TO_CLOSE": "Press {key} to close",
+    },
 }

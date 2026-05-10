@@ -1,6 +1,10 @@
+import logging
+
 from AppKit import NSPasteboard, NSStringPboardType
 
 from application.ports.interfaces import ClipboardService
+
+logger = logging.getLogger(__name__)
 
 
 class MacOSClipboardService(ClipboardService):

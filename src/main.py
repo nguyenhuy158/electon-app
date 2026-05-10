@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import sys
 import threading
@@ -18,6 +19,8 @@ from domain.constants.index import AppConstants
 from domain.i18n.index import I18n
 from infrastructure.adapters.json_repository import JSONClipboardRepository
 from infrastructure.adapters.macos_clipboard import MacOSClipboardService
+
+logger = logging.getLogger(__name__)
 
 
 def get_resource_path(relative_path):
@@ -99,6 +102,7 @@ def monitor_clipboard(window, use_case):
         if current_count != last_count:
             last_count = current_count
             text = clipboard_service.get_clipboard_content()
+            logger.debug(f"Clipboard change detected: {len(text) if text else 0} chars")
             if use_case.add_to_history(text):
                 history_json = json.dumps(use_case.get_history())
                 window.evaluate_js(
@@ -126,7 +130,7 @@ def hot_reload(window):
 
 def setup_global_shortcut(window):
     def on_activate():
-        print("🚀 Global Hotkey Activated!")
+        logger.info("Global Hotkey Activated")
         try:
             window.show()
             NSApp.activateIgnoringOtherApps_(True)
@@ -134,19 +138,36 @@ def setup_global_shortcut(window):
                 "if (window.api && window.api.onFocusSearch) window.api.onFocusSearch()"
             )
         except Exception as e:
-            print(f"Error activating window: {e}")
+            logger.error(f"Error activating window: {e}")
 
     hotkey_str = AppConstants.SHORTCUTS["OPEN_PICKER"]
-    print(f"⌨️ Registering global shortcut: {hotkey_str}")
+    logger.info(f"Registering global shortcut: {hotkey_str}")
 
     try:
         listener = keyboard.GlobalHotKeys({hotkey_str: on_activate})
         listener.start()
     except Exception as e:
-        print(f"❌ Failed to register hotkey: {e}")
+        logger.error(f"Failed to register hotkey: {e}")
 
 
 if __name__ == "__main__":
+    # Setup Logging
+    log_file = os.path.expanduser(AppConstants.LOGGING["LOG_FILE"])
+    log_dir = os.path.dirname(log_file)
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+    log_level = os.environ.get("QUICKCLIP_LOG_LEVEL", AppConstants.LOGGING["DEFAULT_LEVEL"])
+    logging.basicConfig(
+        level=log_level,
+        format=AppConstants.LOGGING["FORMAT"],
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler(sys.stdout)
+        ]
+    )
+    logger.info(f"Starting QuickClip with log level: {log_level}")
+
     # Dependency Injection
     clipboard_service = MacOSClipboardService()
     clipboard_repository = JSONClipboardRepository()

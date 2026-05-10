@@ -15,3 +15,8 @@ class AppConstants:
     STORAGE = {"LOCAL_PATH": "~/.quickclip/clips.json"}
     SHORTCUTS = {"OPEN_PICKER": "<cmd>+<shift>+v", "TOGGLE_PIN": "Control+Enter"}
     LOCALE = "en"
+    LOGGING = {
+        "LOG_FILE": "~/.quickclip/app.log",
+        "DEFAULT_LEVEL": "INFO",
+        "FORMAT": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    }

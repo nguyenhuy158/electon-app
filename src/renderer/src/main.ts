@@ -4,7 +4,8 @@ let isLogin = true,
   currentUser = null,
   fullHistory = [],
   filteredHistory = [],
-  localSelectedIndex = 0;
+  localSelectedIndex = 0,
+  lastGTime = 0;
 
 const historyView = document.getElementById('history-view') as HTMLElement;
 const settingsView = document.getElementById('settings-view') as HTMLElement;
@@ -94,6 +95,18 @@ document.addEventListener('keydown', (e) => {
       localSelectedIndex =
         localSelectedIndex <= 0 ? (filteredHistory.length || 1) - 1 : localSelectedIndex - 1;
       renderHistory(searchInput.value);
+    } else if (e.key === 'G') {
+      localSelectedIndex = filteredHistory.length - 1;
+      renderHistory(searchInput.value);
+    } else if (e.key === 'g') {
+      const now = Date.now();
+      if (now - lastGTime < 500) {
+        localSelectedIndex = 0;
+        renderHistory(searchInput.value);
+        lastGTime = 0;
+      } else {
+        lastGTime = now;
+      }
     } else if (e.key === 'Enter' && localSelectedIndex !== -1)
       (window as any).api.copyToClipboard(filteredHistory[localSelectedIndex]);
   } else if (e.key === 'Enter' && filteredHistory.length > 0) {
