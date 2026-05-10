@@ -1,13 +1,19 @@
 # Dependency directories
 node_modules/
+.venv/
+.worktrees/
 
-# TypeScript
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.spec
+
+# Build/Packaging
 dist/
 out/
 build/
 *.tsbuildinfo
-
-# Electron/Packaging
 *.app
 *.exe
 *.dmg
