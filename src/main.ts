@@ -1,4 +1,4 @@
-import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
+import { app, Tray, Menu, BrowserWindow, ipcMain, globalShortcut } from 'electron';
 import * as path from 'path';
 import 'dotenv/config';
 import { initDb, pool } from './db';
@@ -54,6 +54,20 @@ async function startup() {
   createTray();
   createWindow();
   startClipboardPolling();
+  registerShortcuts();
+}
+
+function registerShortcuts() {
+  globalShortcut.register(APP_CONSTANTS.SHORTCUTS.OPEN_PICKER, () => {
+    if (mainWindow) {
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        mainWindow.show();
+        mainWindow.focus();
+      }
+    }
+  });
 }
 
 function createWindow() {

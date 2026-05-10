@@ -14,4 +14,7 @@ export const APP_CONSTANTS = {
   AUTH: {
     DEFAULT_SALT_ROUNDS: 10,
   },
+  SHORTCUTS: {
+    OPEN_PICKER: 'CommandOrControl+Shift+V',
+  },
 } as const;

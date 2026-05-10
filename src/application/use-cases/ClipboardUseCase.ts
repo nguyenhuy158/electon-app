@@ -36,8 +36,7 @@ export class ClipboardUseCase {
     }
 
     if (this.clipboardRepository) {
-      const user = this.currentUser;
-      const userId = user ? user.id : 'guest';
+      const userId = this.currentUser?.id || 'guest';
       try {
         const clipToSave = new Clip({ 
           userId, 

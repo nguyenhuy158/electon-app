@@ -1,32 +1,31 @@
 # Agent Guide: QuickClip
 
-## Permissions
-- **Primary Maintainer**: `nguyenhuy158`
-- **Restrictions**: Only code pushed by `nguyenhuy158` triggers production releases.
-
 ## Architecture: Hexagonal (TypeScript)
-- **Domain** (`src/domain/models/`): Pure logic, no dependencies.
-- **Application** (`src/application/`): Ports (interfaces) and Use Cases (business logic).
-- **Infrastructure** (`src/infrastructure/adapters/`): Concrete implementations (Postgres, Electron).
-- **Entry Point**: `src/main.ts` is the DI root.
+- **Domain** (`src/domain/`): Pure logic, models, and constants. No external dependencies.
+- **Application** (`src/application/`): Use Cases and Port interfaces.
+- **Infrastructure** (`src/infrastructure//`): Adapters (Postgres, Electron, Logging).
+- **Entry Point**: `src/main.ts` (Main process/DI root) and `src/index.html` (Renderer).
 
-## Shortcuts & Commands
-All commands in the `Makefile` have 1-2 letter shortcuts.
-- `make i`: Install dependencies (`pnpm`).
-- `make s`: Start Electron app via `ts-node`.
-- `make t`: Run Jest tests (required for commit).
-- `make l` / `make f`: Lint / Format.
-- `make cov`: Run coverage.
-- `make sc`: Open HTML coverage report in browser.
+## Critical Constraints
+- **Centralized Constants**: Use `APP_CONSTANTS` from `src/domain/constants/index.ts`. No magic strings/numbers.
+- **String Externalization**: Use `i18n` Message Catalog from `src/domain/i18n/index.ts`. No hardcoded UI strings.
+- **No Comments**: Code must be self-documenting via naming. **Delete all comments** you encounter or write.
+- **100% Coverage**: Required for `Domain` and `Application` layers. Enforced via `make cov`.
 
-## Coding Style & Quality
-- **Self-Documenting Code**: **NEVER** use comments. Code must be entirely self-explanatory through expressive naming and structure.
-- **100% Coverage**: Mandatory for `Domain` and `Application` layers. Enforced by Jest and Husky.
-- **Git Hooks**: Pre-commit hook runs `make t`. Commits fail if coverage drops or tests fail.
-- **Linting**: ESLint ignores `_` prefixed variables (used in Ports/Interfaces).
+## Shortcuts & Commands (`Makefile`)
+- `make i`: Install (`pnpm`)
+- `make s`: Start app (Builds Tailwind + TSC + Electron)
+- `make t`: Run tests
+- `make l` / `make f`: Lint / Format
+- `make cov`: Check coverage (Gatekeeper for `Domain`/`Application`)
+
+## UI & Styling
+- **Design System**: Terminal-native aesthetic (Berkeley Mono, 4px radius, cream/ink palette).
+- **Tailwind v4**: Styles are in `src/styles.css` using `@theme`.
+- **Build**: CSS is compiled from `src/styles.css` to `dist/styles.css`.
 
 ## Operational Gotchas
-- **IPC Bridge**: Renderer **must** use `window.electronAPI` via `src/preload.ts`. Direct Node imports in renderer will fail.
-- **Tray Icon**: App requires `icon.png` in root to start correctly.
-- **Cloud Sync**: Requires `DATABASE_URL` and an authenticated user.
-- **Async/Await**: Ensure DB/Infrastructure operations are properly awaited in Use Cases.
+- **IPC Bridge**: Renderer **must** use `window.api` (via `src/preload.ts`). Direct Node imports in renderer will fail.
+- **Logging**: Use `WinstonLogger` port. Log level configurable via `LOG_LEVEL` in `.env`.
+- **Tray Icon**: Requires `icon.png` in root (or configured path in constants) to initialize.
+- **Sync**: Use Cases must await all repository operations to prevent race conditions.
