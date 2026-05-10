@@ -2,15 +2,35 @@
   "name": "electon-app",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.ts",
+  "main": "dist/main.js",
   "scripts": {
-    "start": "electron -r ts-node/register .",
-    "build": "tsc",
+    "start": "electron -r ts-node/register src/main.ts",
+    "build": "tsc && cp src/index.html dist/",
     "test": "jest",
     "lint": "eslint .",
     "format": "prettier --write .",
     "coverage": "jest --coverage",
     "prepare": "husky"
+  },
+  "build": {
+    "appId": "com.quickclip.app",
+    "productName": "QuickClip",
+    "directories": {
+      "output": "out"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "icon.png"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   },
   "keywords": [],
   "author": "",
@@ -30,6 +50,7 @@
     "@types/pg": "^8.20.0",
     "@typescript-eslint/eslint-plugin": "^8.59.2",
     "@typescript-eslint/parser": "^8.59.2",
+    "electron-builder": "^26.8.1",
     "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",

@@ -31,7 +31,11 @@ install:
 
 # Start the application
 start:
-	pnpm start
+	pnpm run build && pnpm start
+
+# Build JS
+build:
+	pnpm run build
 
 # Run tests
 test:
