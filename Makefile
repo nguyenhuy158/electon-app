@@ -19,7 +19,7 @@ build-ui:
 	npx tailwindcss -i src/renderer/src/styles.css -o src/renderer/styles.css
 
 run: build-ui
-	python python/app.py
+	python src/main/index.py
 
 # Smallest size build for macOS using PyInstaller or just zip
 build: build-ui
@@ -28,7 +28,7 @@ build: build-ui
 	pyinstaller --noconfirm --onefile --windowed --name "QuickClip" \
 		--add-data "src/renderer/index.html:src/renderer" \
 		--add-data "src/renderer/styles.css:src/renderer" \
-		python/app.py
+		src/main/index.py
 	@echo "Build complete. Check dist/QuickClip.app"
 
 clean:
