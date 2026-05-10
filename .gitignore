@@ -38,6 +38,11 @@ pnpm-debug.log*
 # Coverage
 coverage/
 .nyc_output
+.coverage
+htmlcov/
+
+# Generated files
+src/renderer/styles.css
 
 # OS-specific files
 .DS_Store

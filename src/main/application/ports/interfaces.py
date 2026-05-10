@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class ClipboardService(ABC):
     @abstractmethod
     def copy_to_clipboard(self, text: str):
@@ -8,6 +9,7 @@ class ClipboardService(ABC):
     @abstractmethod
     def get_clipboard_content(self) -> str:
         pass
+
 
 class ClipboardRepository(ABC):
     @abstractmethod

@@ -1,4 +1,4 @@
-.PHONY: help install run build clean build-ui s i b c t l f cov
+.PHONY: help install run build clean build-ui s i b c t l f cov sc
 
 help:
 	@echo "Usage: make [target]"
@@ -12,6 +12,7 @@ help:
 	@echo "  lint (l)      Lint code using ruff"
 	@echo "  format (f)    Format code using ruff"
 	@echo "  cov           Run tests with coverage report"
+	@echo "  sc            Show coverage report in browser"
 	@echo "  clean (c)     Remove build artifacts"
 	@echo "  help          Show this help message"
 
@@ -45,7 +46,10 @@ format:
 	./.venv/bin/ruff format .
 
 cov:
-	./.venv/bin/pytest --cov=src/main src/main --cov-report=term-missing
+	./.venv/bin/pytest --cov=src/main src/main --cov-report=term-missing --cov-report=html
+
+sc:
+	open htmlcov/index.html
 
 # Smallest size build for macOS using PyInstaller or just zip
 build: build-ui
@@ -57,4 +61,4 @@ build: build-ui
 		src/main/index.py
 
 clean:
-	rm -rf build dist *.spec .venv src/renderer/styles.css
+	rm -rf build dist *.spec .venv src/renderer/styles.css htmlcov

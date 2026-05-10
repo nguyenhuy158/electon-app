@@ -1,16 +1,14 @@
-from .en import MESSAGES as en_messages
-from .vi import MESSAGES as vi_messages
+from .en import MESSAGES as EN_MESSAGES
+from .vi import MESSAGES as VI_MESSAGES
+
 
 class I18n:
     def __init__(self, locale="en"):
         self.locale = locale
-        self.catalogs = {
-            "en": en_messages,
-            "vi": vi_messages
-        }
-    
+        self.catalogs = {"en": EN_MESSAGES, "vi": VI_MESSAGES}
+
     def t(self, key_path):
-        keys = key_path.split('.')
+        keys = key_path.split(".")
         content = self.catalogs.get(self.locale, self.catalogs["en"])
         for k in keys:
             if isinstance(content, dict) and k in content:
@@ -18,5 +16,6 @@ class I18n:
             else:
                 return key_path
         return content
+
 
 i18n = I18n()

@@ -188,10 +188,10 @@
       window.api = {
         onHistoryUpdate: (cb) => { window.onHistoryUpdate = cb; },
         onFocusSearch: (cb) => { window.onFocusSearch = cb; },
-        getHistory: () => Promise.resolve([]),
-        getShortcut: () => Promise.resolve(''),
-        updateShortcut: () => Promise.resolve({ success: true }),
-        copyToClipboard: (t) => { if (window.pywebview) window.pywebview.api.copyToClipboard(t); },
+        getHistory: () => window.pywebview ? window.pywebview.api.get_history() : Promise.resolve([]),
+        getShortcut: () => window.pywebview ? window.pywebview.api.get_shortcut() : Promise.resolve(''),
+        updateShortcut: (s) => window.pywebview ? window.pywebview.api.update_shortcut(s) : Promise.resolve({ success: true }),
+        copyToClipboard: (t) => { if (window.pywebview) window.pywebview.api.copy_to_clipboard(t); },
         login: (d) => window.pywebview ? window.pywebview.api.login(d) : Promise.resolve({ success: true }),
         register: (d) => window.pywebview ? window.pywebview.api.register(d) : Promise.resolve({ success: true }),
         logout: () => window.pywebview ? window.pywebview.api.logout() : Promise.resolve(true)
@@ -203,7 +203,11 @@
         window.api = {
           ...pyApi,
           onHistoryUpdate: oldApi.onHistoryUpdate,
-          onFocusSearch: oldApi.onFocusSearch
+          onFocusSearch: oldApi.onFocusSearch,
+          getHistory: pyApi.get_history,
+          getShortcut: pyApi.get_shortcut,
+          updateShortcut: pyApi.update_shortcut,
+          copyToClipboard: pyApi.copy_to_clipboard
         };
         loadData();
       });
@@ -332,7 +336,7 @@
       });
 
       const loadData = async () => {
-        shortcutInput.value = await window.api.getShortcut();
+        shortcutInput.value = await window.api.getHistory();
         fullHistory = await window.api.getHistory();
         renderHistory();
       };
