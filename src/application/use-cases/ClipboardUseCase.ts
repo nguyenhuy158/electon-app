@@ -22,14 +22,17 @@ export class ClipboardUseCase {
   }
 
   async addClip(text: string, onUpdate?: (history: string[]) => void) {
-    if (this.clipHistory.includes(text)) {
-      return;
+    const existingIndex = this.clipHistory.indexOf(text);
+    if (existingIndex !== -1) {
+      this.clipHistory.splice(existingIndex, 1);
     }
 
     this.clipHistory.unshift(text);
     if (this.clipHistory.length > this.historyLimit) {
       this.clipHistory.pop();
     }
+
+    console.log(`[ClipboardUseCase] Added clip, history size: ${this.clipHistory.length}`);
 
     if (onUpdate) {
       onUpdate(this.clipHistory);
@@ -38,9 +41,9 @@ export class ClipboardUseCase {
     if (this.clipboardRepository) {
       const userId = this.currentUser?.id || 'guest';
       try {
-        const clipToSave = new Clip({ 
-          userId, 
-          content: text 
+        const clipToSave = new Clip({
+          userId,
+          content: text,
         });
         await this.clipboardRepository.save(clipToSave);
       } catch (err: any) {
@@ -60,7 +63,7 @@ export class ClipboardUseCase {
   async loadCloudHistory(userId: string) {
     if (this.clipboardRepository) {
       const history = await this.clipboardRepository.getRecent(userId, this.historyLimit);
-      this.clipHistory = history.map(h => h.content);
+      this.clipHistory = history.map((h) => h.content);
       return this.clipHistory;
     }
     return [];

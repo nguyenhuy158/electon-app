@@ -5,6 +5,9 @@ const ts = require('@typescript-eslint/eslint-plugin');
 const tsParser = require('@typescript-eslint/parser');
 
 module.exports = [
+  {
+    ignores: ['dist/**', 'node_modules/**', 'out/**', 'coverage/**', 'pnpm-lock.yaml'],
+  },
   js.configs.recommended,
   prettier,
   {
@@ -26,6 +29,15 @@ module.exports = [
       ...ts.configs.recommended.rules,
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/ban-ts-comment': [
+        'error',
+        {
+          'ts-ignore': true,
+          'ts-expect-error': true,
+          'ts-nocheck': true,
+          'ts-check': false,
+        },
+      ],
       'no-unused-vars': 'off',
       'no-console': 'off',
     },

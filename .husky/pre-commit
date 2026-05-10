@@ -1,1 +1,11 @@
-pnpm test
+echo "🔍 Running Quality Gates..."
+
+# Run Linting
+echo "📝 Checking linting..."
+make l || { echo "❌ Linting failed. Run 'make l' or 'make f' to fix."; exit 1; }
+
+# Run Tests & Coverage
+echo "🧪 Checking tests and coverage..."
+make cov || { echo "❌ Coverage or tests failed. Ensure 100% coverage."; exit 1; }
+
+echo "✅ All gates passed. Committing..."

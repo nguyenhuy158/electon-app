@@ -61,14 +61,16 @@ describe('ClipboardUseCase', () => {
   });
 
   test('loadCloudHistory should return empty if no repo', async () => {
-    // @ts-ignore
-    const noRepoUseCase = new ClipboardUseCase(null, mockService, mockNotify);
+    const noRepoUseCase = new ClipboardUseCase(null as any, mockService, mockNotify);
     const result = await noRepoUseCase.loadCloudHistory('u1');
     expect(result).toEqual([]);
   });
 
   test('loadCloudHistory should load and set history', async () => {
-    const cloudData = [new Clip({ userId: 'u1', content: 'cloud 1' }), new Clip({ userId: 'u1', content: 'cloud 2' })];
+    const cloudData = [
+      new Clip({ userId: 'u1', content: 'cloud 1' }),
+      new Clip({ userId: 'u1', content: 'cloud 2' }),
+    ];
     mockRepo.getRecent.mockResolvedValue(cloudData);
     const result = await useCase.loadCloudHistory('u1');
     expect(result).toEqual(['cloud 1', 'cloud 2']);
