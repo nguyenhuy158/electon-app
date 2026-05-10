@@ -18,8 +18,8 @@ b: build
 c: clean
 
 install:
-	python3 -m venv .venv
-	./.venv/bin/pip install -r requirements.txt
+	uv venv .venv
+	uv pip install -r requirements.txt
 	pnpm install
 
 # Shortcuts
@@ -37,7 +37,7 @@ run: build-ui
 # Smallest size build for macOS using PyInstaller or just zip
 build: build-ui
 	@echo "Building for macOS..."
-	./.venv/bin/pip install pyinstaller
+	uv pip install pyinstaller
 	./.venv/bin/pyinstaller --noconfirm --onefile --windowed --name "QuickClip" \
 		--add-data "src/renderer/index.html:src/renderer" \
 		--add-data "src/renderer/styles.css:src/renderer" \
