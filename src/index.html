@@ -19,178 +19,326 @@
       }
     </style>
   </head>
-  <body class="p-8">
-    <div class="card-container" id="auth-form">
-      <div class="ascii-banner">
+  <body class="p-6 h-screen flex flex-col overflow-hidden bg-canvas text-body font-sans">
+    <div class="flex items-center justify-between mb-4 shrink-0">
+      <div class="ascii-banner mb-0 text-left">
         _ _ _ _ _ _ _ _ _ _ _ _ _ ( )( )( )( )( )( )( )( )( )( )( )( )( )
         |Q||U||I||C||K||C||L||I||P||S||Y||N||C| (_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)
       </div>
-      <h1 id="form-title" class="text-[16px] font-bold uppercase tracking-wider mb-0">Login</h1>
-      <input type="email" id="email" placeholder="[email]" required class="input-field" />
-      <input type="password" id="password" placeholder="[password]" required class="input-field" />
-      <button id="submit-btn" class="btn-primary w-full mt-2">Login</button>
-      <div class="toggle text-[14px] font-bold text-center mt-4 cursor-pointer" id="guest-btn">
-        [>] Continue as Guest
-      </div>
-      <div
-        class="toggle text-[14px] text-mute underline text-center mt-2 cursor-pointer"
-        id="toggle-link"
+      <button
+        id="settings-toggle"
+        class="p-2 hover:bg-surface-soft rounded-sm transition-colors cursor-pointer"
+        title="Settings"
       >
-        [+] No account? Register
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+          ></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+    </div>
+
+    <div id="history-view" class="flex flex-col flex-1 min-h-0">
+      <div class="flex items-center gap-2 mb-4 shrink-0">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="[Type to filter entries...]"
+          class="input-field mb-0 flex-1"
+        />
+      </div>
+      <div id="history-list" class="space-y-2 overflow-y-auto pr-2 custom-scrollbar flex-1"></div>
+    </div>
+
+    <div id="settings-view" class="hidden flex flex-col flex-1 min-h-0">
+      <div class="flex items-center gap-2 mb-6 shrink-0">
+        <button
+          id="settings-back"
+          class="p-2 hover:bg-surface-soft rounded-sm transition-colors cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <h2 class="text-[14px] font-bold uppercase tracking-wider">Settings</h2>
+      </div>
+      <div class="space-y-6 overflow-y-auto pr-2 custom-scrollbar flex-1">
+        <section class="bg-surface-card p-4 rounded-sm border border-hairline">
+          <h3 class="text-[10px] font-bold uppercase text-mute mb-3 tracking-[2px]">Account</h3>
+          <div>
+            <p class="text-[13px] font-bold" id="user-email">Guest</p>
+            <p class="text-[10px] text-mute mt-1" id="sync-status">Offline mode: local storage</p>
+          </div>
+          <button id="auth-trigger-btn" class="btn-primary w-full mt-4 text-[12px]">
+            Login to Sync
+          </button>
+          <button
+            id="logout-btn"
+            class="btn-primary w-full mt-4 text-[12px] hidden text-danger border-danger/20"
+          >
+            Logout
+          </button>
+        </section>
+        <section class="bg-surface-card p-4 rounded-sm border border-hairline">
+          <h3 class="text-[10px] font-bold uppercase text-mute mb-3 tracking-[2px]">
+            GLOBAL SHORTCUT
+          </h3>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="shortcut-input"
+              class="input-field mb-0 mt-0 flex-1 py-1.5 text-[12px]"
+              placeholder="e.g. CmdOrCtrl+Shift+V"
+            />
+            <button id="save-shortcut-btn" class="btn-primary py-1 px-4 text-[12px]">Save</button>
+          </div>
+          <p id="shortcut-status" class="text-[10px] mt-2 h-4"></p>
+        </section>
+        <section class="p-4 border-t border-hairline">
+          <h3 class="text-[10px] font-bold uppercase text-mute mb-2 tracking-[2px]">Shortcuts</h3>
+          <ul class="text-[11px] space-y-1.5 text-body">
+            <li class="flex justify-between">
+              <span>Search</span> <span class="bg-surface-soft px-1 rounded">/</span>
+            </li>
+            <li class="flex justify-between">
+              <span>Quick Select</span> <span class="bg-surface-soft px-1 rounded">1-9</span>
+            </li>
+            <li class="flex justify-between">
+              <span>Move Down/Up</span> <span class="bg-surface-soft px-1 rounded">j/k</span>
+            </li>
+            <li class="flex justify-between">
+              <span>Copy Selected</span> <span class="bg-surface-soft px-1 rounded">Enter</span>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <div
+      id="auth-form"
+      class="hidden flex flex-col flex-1 min-h-0 bg-canvas absolute inset-0 p-6 z-10"
+    >
+      <div class="flex items-center gap-2 mb-6">
+        <button
+          id="auth-back"
+          class="p-2 hover:bg-surface-soft rounded-sm transition-colors cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <h2 id="form-title" class="text-[14px] font-bold uppercase tracking-wider">Login</h2>
+      </div>
+      <div class="space-y-4">
+        <input type="email" id="email" placeholder="[email]" required class="input-field mt-0" />
+        <input
+          type="password"
+          id="password"
+          placeholder="[password]"
+          required
+          class="input-field mt-0"
+        />
+        <button id="submit-btn" class="btn-primary w-full">Login</button>
+        <div class="text-center mt-6">
+          <div class="toggle text-[12px] text-mute underline cursor-pointer" id="toggle-link">
+            [+] No account? Register
+          </div>
+        </div>
       </div>
       <div
         id="status"
-        class="mt-6 p-3 rounded-sm hidden text-[14px] bg-surface-card border border-hairline"
+        class="mt-auto p-3 rounded-sm hidden text-[12px] bg-surface-card border border-hairline"
       ></div>
     </div>
 
-    <div class="card-container hidden" id="user-info">
-      <div class="ascii-banner">
-        _ _ _ _ _ _ _ _ _ _ _ _ _ ( )( )( )( )( )( )( )( )( )( )( )( )( )
-        |Q||U||I||C||K||C||L||I||P||S||Y||N||C| (_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)(_)
-      </div>
-
-      <!-- History Section -->
-      <div id="history-container" class="mt-4">
-        <div class="flex items-center gap-2 mb-4">
-          <input
-            type="text"
-            id="search-input"
-            placeholder="[Type to filter entries...]"
-            class="input-field mb-0 flex-1"
-          />
-        </div>
-
-        <div
-          id="history-list"
-          class="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar"
-        >
-          <!-- Clips will appear here -->
-        </div>
-      </div>
-
-      <div class="border-t border-hairline pt-4 mt-6">
-        <p class="text-[12px] mb-2">
-          [+] Active: <strong id="user-email" class="font-bold"></strong>
-        </p>
-        <p class="text-[10px] text-mute mb-4" id="sync-status"></p>
-
-        <label class="text-[12px] font-bold uppercase tracking-wider block mb-2"
-          >Global Shortcut</label
-        >
-        <div class="flex gap-2">
-          <input
-            type="text"
-            id="shortcut-input"
-            class="input-field mb-0 flex-1"
-            placeholder="e.g. CmdOrCtrl+Shift+V"
-          />
-          <button id="save-shortcut-btn" class="btn-primary py-1 px-4 text-[12px]">Save</button>
-        </div>
-        <p id="shortcut-status" class="text-[10px] mt-1 text-mute"></p>
-      </div>
-
-      <button onclick="location.reload()" class="btn-primary w-full mt-6">Logout</button>
-    </div>
-
     <script>
-      let isLogin = true;
-      const formTitle = document.getElementById('form-title');
-      const submitBtn = document.getElementById('submit-btn');
-      const toggleLink = document.getElementById('toggle-link');
-      const guestBtn = document.getElementById('guest-btn');
-      const status = document.getElementById('status');
-
-      // Shortcut UI elements
-      const shortcutInput = document.getElementById('shortcut-input');
-      const saveShortcutBtn = document.getElementById('save-shortcut-btn');
-      const shortcutStatus = document.getElementById('shortcut-status');
-
-      // History elements
-      const historyList = document.getElementById('history-list');
-      const searchInput = document.getElementById('search-input');
-      let fullHistory = [];
+      let isLogin = true,
+        currentUser = null,
+        fullHistory = [],
+        filteredHistory = [],
+        localSelectedIndex = 0;
+      const historyView = document.getElementById('history-view'),
+        settingsView = document.getElementById('settings-view'),
+        authForm = document.getElementById('auth-form');
+      const settingsToggle = document.getElementById('settings-toggle'),
+        settingsBack = document.getElementById('settings-back'),
+        authBack = document.getElementById('auth-back');
+      const formTitle = document.getElementById('form-title'),
+        submitBtn = document.getElementById('submit-btn'),
+        toggleLink = document.getElementById('toggle-link'),
+        status = document.getElementById('status');
+      const authTriggerBtn = document.getElementById('auth-trigger-btn'),
+        logoutBtn = document.getElementById('logout-btn'),
+        userEmailDisplay = document.getElementById('user-email'),
+        syncStatusDisplay = document.getElementById('sync-status');
+      const shortcutInput = document.getElementById('shortcut-input'),
+        saveShortcutBtn = document.getElementById('save-shortcut-btn'),
+        shortcutStatus = document.getElementById('shortcut-status');
+      const historyList = document.getElementById('history-list'),
+        searchInput = document.getElementById('search-input');
 
       const renderHistory = (filter = '') => {
         historyList.innerHTML = '';
-        const filtered = fullHistory.filter((text) =>
-          text.toLowerCase().includes(filter.toLowerCase())
-        );
-
+        filteredHistory = fullHistory.filter((t) => t.toLowerCase().includes(filter.toLowerCase()));
         if (fullHistory.length === 0) {
-          historyList.innerHTML = `<div class="text-mute text-center py-8 text-[13px] italic">[Clipboard history is empty]</div>`;
+          historyList.innerHTML =
+            '<div class="text-mute text-center py-8 text-[13px] italic">[History empty]</div>';
           return;
         }
-
-        if (filtered.length === 0) {
-          historyList.innerHTML = `<div class="text-mute text-center py-8 text-[13px] italic">[No matches found for "${filter}"]</div>`;
+        if (filteredHistory.length === 0) {
+          historyList.innerHTML =
+            '<div class="text-mute text-center py-8 text-[13px] italic">[No matches]</div>';
           return;
         }
+        if (localSelectedIndex >= filteredHistory.length)
+          localSelectedIndex = filteredHistory.length - 1;
 
-        filtered.forEach((text) => {
-          const item = document.createElement('div');
-          item.className =
-            'p-3 bg-surface-card border border-hairline rounded-sm cursor-pointer hover:border-accent group transition-all duration-200';
-
-          const content = text.length > 100 ? text.substring(0, 97) + '...' : text;
-
+        filteredHistory.forEach((text, i) => {
+          const item = document.createElement('div'),
+            isSel = i === localSelectedIndex;
+          item.className = `p-3 bg-surface-card border rounded-sm cursor-pointer group transition-all flex items-start gap-3 ${isSel ? 'border-accent ring-1 ring-accent' : 'border-hairline hover:border-accent'}`;
           item.innerHTML = `
-            <div class="flex items-start justify-between">
-              <div class="text-[13px] text-primary break-words whitespace-pre-wrap">${content}</div>
-              <div class="text-[10px] text-mute group-hover:text-accent font-mono ml-2 shrink-0">↵</div>
-            </div>
-          `;
-
-          item.onclick = () => window.api.copyToClipboard(text);
+            <span class="text-[10px] ${isSel ? 'text-accent font-bold' : 'text-mute'} font-mono mt-0.5">${i + 1}</span>
+            <div class="flex-1 min-w-0"><div class="text-[13px] ${isSel ? 'text-accent font-bold' : 'text-primary'} break-words whitespace-pre-wrap">${text.length > 100 ? text.substring(0, 97) + '...' : text}</div></div>
+            <div class="text-[10px] ${isSel ? 'text-accent' : 'text-mute'} group-hover:text-accent font-mono mt-0.5">${isSel ? '►' : '↵'}</div>`;
+          item.onclick = () => {
+            localSelectedIndex = i;
+            window.api.copyToClipboard(text);
+          };
           historyList.appendChild(item);
+          if (isSel) item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         });
       };
 
-      searchInput.oninput = (e) => renderHistory(e.target.value);
+      searchInput.oninput = (e) => {
+        localSelectedIndex = 0;
+        renderHistory(e.target.value);
+      };
 
-      window.api.onHistoryUpdate((history) => {
-        fullHistory = history;
-        renderHistory(searchInput.value);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== searchInput) {
+          e.preventDefault();
+          searchInput.focus();
+          return;
+        }
+        if (e.key === 'Escape') {
+          if (document.activeElement === searchInput) searchInput.blur();
+          else if (!authForm.classList.contains('hidden')) authBack.click();
+          else if (!settingsView.classList.contains('hidden')) settingsBack.click();
+          else {
+            localSelectedIndex = -1;
+            renderHistory(searchInput.value);
+          }
+          return;
+        }
+        if (e.key >= '1' && e.key <= '9' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          const idx = parseInt(e.key) - 1;
+          if (filteredHistory[idx]) window.api.copyToClipboard(filteredHistory[idx]);
+          return;
+        }
+        if (document.activeElement !== searchInput) {
+          if (e.key === 'j') {
+            localSelectedIndex = (localSelectedIndex + 1) % (filteredHistory.length || 1);
+            renderHistory(searchInput.value);
+          } else if (e.key === 'k') {
+            localSelectedIndex =
+              localSelectedIndex <= 0 ? (filteredHistory.length || 1) - 1 : localSelectedIndex - 1;
+            renderHistory(searchInput.value);
+          } else if (e.key === 'Enter' && localSelectedIndex !== -1)
+            window.api.copyToClipboard(filteredHistory[localSelectedIndex]);
+        } else if (e.key === 'Enter' && filteredHistory.length > 0) {
+          window.api.copyToClipboard(
+            filteredHistory[localSelectedIndex === -1 ? 0 : localSelectedIndex]
+          );
+        }
       });
 
-      const loadShortcut = async () => {
-        const current = await window.api.getShortcut();
-        shortcutInput.value = current;
+      settingsToggle.onclick = () => {
+        historyView.classList.add('hidden');
+        settingsView.classList.remove('hidden');
+        settingsToggle.classList.add('hidden');
+      };
+      settingsBack.onclick = () => {
+        settingsView.classList.add('hidden');
+        historyView.classList.remove('hidden');
+        settingsToggle.classList.remove('hidden');
+      };
+      authTriggerBtn.onclick = () => authForm.classList.remove('hidden');
+      authBack.onclick = () => authForm.classList.add('hidden');
 
-        // Also initial history load
+      window.api.onHistoryUpdate((h) => {
+        fullHistory = h;
+        renderHistory(searchInput.value);
+      });
+      window.api.onFocusSearch(() => {
+        searchInput.focus();
+        searchInput.select();
+      });
+
+      const loadData = async () => {
+        shortcutInput.value = await window.api.getShortcut();
         fullHistory = await window.api.getHistory();
         renderHistory();
       };
+      loadData();
 
       saveShortcutBtn.onclick = async () => {
-        const newShortcut = shortcutInput.value.trim();
-        if (!newShortcut) return;
-
+        const val = shortcutInput.value.trim();
+        if (!val) return;
         saveShortcutBtn.disabled = true;
         shortcutStatus.innerText = 'Updating...';
-
-        const result = await window.api.updateShortcut(newShortcut);
-        if (result.success) {
-          shortcutStatus.innerText = 'Shortcut updated!';
-          shortcutStatus.className = 'text-[10px] mt-1 text-success';
-        } else {
-          shortcutStatus.innerText = 'Error: ' + result.error;
-          shortcutStatus.className = 'text-[10px] mt-1 text-danger';
-        }
-
+        const res = await window.api.updateShortcut(val);
+        shortcutStatus.innerText = res.success ? 'Updated!' : 'Error: ' + res.error;
+        shortcutStatus.className =
+          'text-[10px] mt-2 ' + (res.success ? 'text-success' : 'text-danger');
         setTimeout(() => {
           shortcutStatus.innerText = '';
           saveShortcutBtn.disabled = false;
-        }, 3000);
+        }, 2000);
       };
 
-      guestBtn.onclick = () => {
-        document.getElementById('auth-form').classList.add('hidden');
-        document.getElementById('user-info').classList.remove('hidden');
-        document.getElementById('user-email').innerText = 'Guest';
-        document.getElementById('sync-status').innerText =
-          '[+] Offline mode: saving locally at ~/.quickclip';
-        loadShortcut();
+      logoutBtn.onclick = async () => {
+        await window.api.logout();
+        currentUser = null;
+        userEmailDisplay.innerText = 'Guest';
+        syncStatusDisplay.innerText = 'Offline mode: local storage';
+        authTriggerBtn.classList.remove('hidden');
+        logoutBtn.classList.add('hidden');
+        loadData();
+        settingsBack.click();
       };
 
       toggleLink.onclick = () => {
@@ -201,26 +349,23 @@
       };
 
       submitBtn.onclick = async () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
+        const email = document.getElementById('email').value,
+          pass = document.getElementById('password').value;
         status.classList.remove('hidden');
         status.innerText = 'Processing...';
-        status.className = 'mt-6 p-3 rounded-sm text-[14px] bg-surface-card border border-hairline';
-
-        const result = isLogin
-          ? await window.api.login({ email, password })
-          : await window.api.register({ email, password });
-
-        if (result.success) {
-          document.getElementById('auth-form').classList.add('hidden');
-          document.getElementById('user-info').classList.remove('hidden');
-          document.getElementById('user-email').innerText = result.user.email;
-          document.getElementById('sync-status').innerText =
-            '[+] Clipboard history is being synced to database.';
-          loadShortcut();
+        const res = isLogin
+          ? await window.api.login({ email, password: pass })
+          : await window.api.register({ email, password: pass });
+        if (res.success) {
+          currentUser = res.user;
+          authForm.classList.add('hidden');
+          userEmailDisplay.innerText = res.user.email;
+          syncStatusDisplay.innerText = 'Cloud sync active';
+          authTriggerBtn.classList.add('hidden');
+          logoutBtn.classList.remove('hidden');
+          loadData();
         } else {
-          status.innerText = 'Error: ' + result.error;
+          status.innerText = 'Error: ' + res.error;
           status.classList.add('text-danger');
         }
       };

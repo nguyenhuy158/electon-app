@@ -13,19 +13,15 @@ export class AuthUseCase {
   }
 
   private initClient(url: string) {
-    if (!url) {
-      console.error(i18n.AUTH.URL_NOT_CONFIG);
-      return;
-    }
+    if (!url) return;
     this.doInit(url);
   }
 
   private doInit(url: string) {
-    console.log('Initializing Neon Auth with URL:', url);
     try {
       this.client = createAuthClient(url);
     } catch (e) {
-      console.error(i18n.AUTH.CLIENT_NOT_INIT, e);
+      // client remains null
     }
   }
 
@@ -39,7 +35,7 @@ export class AuthUseCase {
       const result = await this.client.signUp.email({
         email,
         password,
-        name: email.split('@')[0], // Provide a default name derived from email
+        name: email.split('@')[0],
         callbackURL: 'http://localhost.com',
       });
 
@@ -70,7 +66,7 @@ export class AuthUseCase {
       const result = await this.client.signIn.email({
         email,
         password,
-        callbackURL: 'http://localhost.com', // Updated to 2-label domain for Neon validation
+        callbackURL: 'http://localhost.com',
       });
 
       if (result.error) {

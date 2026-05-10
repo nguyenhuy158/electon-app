@@ -1,20 +1,22 @@
-.PHONY: help install start test clean i s t c lint format coverage l f cov sc tw w
+.PHONY: help install start test clean i s t c lint format coverage l f cov sc tw w b build pkg package
 
 # Default target
 help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  install  (i)   Install dependencies"
-	@echo "  start    (s)   Start the application"
-	@echo "  test     (t)   Run tests"
+	@echo "  install  (i)     Install dependencies"
+	@echo "  build    (b)     Build the application"
+	@echo "  start    (s)     Start the application"
+	@echo "  package  (pkg)   Package for macOS (.dmg)"
+	@echo "  test     (t)     Run tests"
 	@echo "  test-watch (tw/w) Run tests in watch mode"
-	@echo "  lint     (l)   Lint code"
-	@echo "  format   (f)   Format code"
-	@echo "  coverage (cov) Run tests with coverage"
-	@echo "  serve-cov (sc) Serve coverage report in browser"
-	@echo "  clean    (c)   Clean build artifacts and node_modules"
-	@echo "  help           Show this help message"
+	@echo "  lint     (l)     Lint code"
+	@echo "  format   (f)     Format code"
+	@echo "  coverage (cov)   Run tests with coverage"
+	@echo "  serve-cov (sc)   Serve coverage report in browser"
+	@echo "  clean    (c)     Clean build artifacts and node_modules"
+	@echo "  help             Show this help message"
 
 # Shortcuts
 i: install
@@ -27,18 +29,28 @@ cov: coverage
 sc: serve-cov
 tw: test-watch
 w: test-watch
+b: build
+pkg: package
 
 # Install dependencies
 install:
 	pnpm install
 
-# Start the application
+# Start the application (Builds and then runs)
 start:
-	pnpm run build && pnpm start
+	@$(MAKE) build
+	pnpm start
 
-# Build JS
+# Build JS and CSS
 build:
-	pnpm run build
+	@echo "Building project..."
+	@pnpm run build
+	@echo "Build complete."
+
+
+# Package for macOS
+package:
+	pnpm run package
 
 # Run tests
 test:

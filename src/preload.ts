@@ -11,4 +11,6 @@ contextBridge.exposeInMainWorld('api', {
   onHistoryUpdate: (callback: (history: string[]) => void) =>
     ipcRenderer.on('history-updated', (_event, history) => callback(history)),
   copyToClipboard: (text: string) => ipcRenderer.invoke('copy-to-clipboard', text),
+  logout: () => ipcRenderer.invoke('logout'),
+  onFocusSearch: (callback: () => void) => ipcRenderer.on('focus-search', () => callback()),
 });

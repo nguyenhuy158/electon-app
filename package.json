@@ -6,6 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build": "tsc && npx tailwindcss -i ./src/styles.css -o ./dist/styles.css && cp src/index.html dist/",
+    "package": "pnpm run build && electron-builder --mac",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint .",
@@ -21,7 +22,6 @@
     },
     "files": [
       "dist/**/*",
-      "node_modules/**/*",
       "package.json",
       "icon.png"
     ],
@@ -40,11 +40,11 @@
   "dependencies": {
     "@neondatabase/auth": "0.4.0-beta",
     "dotenv": "^17.4.2",
-    "electron": "^42.0.1",
     "pg": "^8.20.0",
     "winston": "^3.19.0"
   },
   "devDependencies": {
+    "electron": "^42.0.1",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/cli": "^4.3.0",
     "@types/jest": "^30.0.0",

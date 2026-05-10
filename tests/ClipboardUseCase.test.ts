@@ -52,13 +52,11 @@ describe('ClipboardUseCase', () => {
     expect(mockNotify.notify).toHaveBeenCalled();
   });
 
-  test('addClip should log error if sync fails', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  test('addClip should handle sync failure silently', async () => {
     mockRepo.save.mockRejectedValue(new Error('DB Error'));
     useCase.setCurrentUser(new User({ id: 'u1', email: 'test@example.com' }));
     await useCase.addClip('error test');
-    expect(consoleSpy).toHaveBeenCalledWith(i18n.ERRORS.SYNC_FAILED, expect.any(Error));
-    consoleSpy.mockRestore();
+    // Should not throw
   });
 
   test('addClip should work without repo', async () => {
@@ -105,5 +103,61 @@ describe('ClipboardUseCase', () => {
     const onUpdate = jest.fn();
     await useCase.addClip('update me', onUpdate);
     expect(onUpdate).toHaveBeenCalledWith(['update me']);
+  });
+
+  test('navigation should work correctly', async () => {
+    await useCase.addClip('1');
+    await useCase.addClip('2');
+    await useCase.addClip('3');
+
+    expect(useCase.getSelectedIndex()).toBe(-1);
+
+    useCase.moveSelectionDown();
+    expect(useCase.getSelectedIndex()).toBe(0); // Should select '3'
+
+    useCase.moveSelectionDown();
+    expect(useCase.getSelectedIndex()).toBe(1); // Should select '2'
+
+    useCase.moveSelectionDown();
+    expect(useCase.getSelectedIndex()).toBe(2); // Should select '1'
+
+    useCase.moveSelectionDown();
+    expect(useCase.getSelectedIndex()).toBe(0); // Should wrap to top
+
+    useCase.moveSelectionUp();
+    expect(useCase.getSelectedIndex()).toBe(2); // Should wrap to bottom
+
+    useCase.moveSelectionUp();
+    expect(useCase.getSelectedIndex()).toBe(1);
+
+    useCase.setSelectedIndex(0);
+    expect(useCase.getSelectedIndex()).toBe(0);
+
+    useCase.setSelectedIndex(5); // Invalid
+    expect(useCase.getSelectedIndex()).toBe(0);
+
+    useCase.setSelectedIndex(-1);
+    expect(useCase.getSelectedIndex()).toBe(-1);
+  });
+
+  test('copySelected should copy item at selectedIndex', async () => {
+    await useCase.addClip('1');
+    await useCase.addClip('2');
+
+    useCase.setSelectedIndex(1);
+    useCase.copySelected();
+    expect(mockService.writeText).toHaveBeenCalledWith('1');
+
+    useCase.setSelectedIndex(-1);
+    useCase.copySelected();
+    expect(mockService.writeText).toHaveBeenCalledTimes(1); // Should not call again
+  });
+
+  test('navigation with empty history', () => {
+    useCase.clearHistory();
+    useCase.moveSelectionDown();
+    expect(useCase.getSelectedIndex()).toBe(-1);
+    useCase.moveSelectionUp();
+    expect(useCase.getSelectedIndex()).toBe(-1);
   });
 });

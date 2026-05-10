@@ -5,7 +5,6 @@ import { initDb, pool } from './db';
 import { APP_CONSTANTS } from './domain/constants';
 import { i18n } from './domain/i18n';
 
-// Infrastructure Adapters
 import { PostgresUserRepository } from './infrastructure/adapters/PostgresUserRepository';
 import { PostgresClipboardRepository } from './infrastructure/adapters/PostgresClipboardRepository';
 import { LocalFileClipboardRepository } from './infrastructure/adapters/LocalFileClipboardRepository';
@@ -13,7 +12,6 @@ import { SmartClipboardRepository } from './infrastructure/adapters/SmartClipboa
 import { ElectronClipboardService } from './infrastructure/adapters/ElectronClipboardService';
 import { ElectronNotificationService } from './infrastructure/adapters/ElectronNotificationService';
 
-// Use Cases
 import { AuthUseCase } from './application/use-cases/AuthUseCase';
 import { ClipboardUseCase } from './application/use-cases/ClipboardUseCase';
 
@@ -22,7 +20,6 @@ let mainWindow: BrowserWindow | null = null;
 let lastClip: string = '';
 let currentShortcut: string = APP_CONSTANTS.SHORTCUTS.OPEN_PICKER;
 
-// Dependency Injection
 const userRepository = new PostgresUserRepository(pool);
 const cloudClipboardRepository = new PostgresClipboardRepository(pool);
 const localClipboardRepository = new LocalFileClipboardRepository();
@@ -40,7 +37,6 @@ const clipboardUseCase = new ClipboardUseCase(
   notificationService
 );
 
-// Register IPC handlers
 ipcMain.handle('get-shortcut', () => currentShortcut);
 ipcMain.handle('update-shortcut', (_event, shortcut: string) => {
   try {
@@ -82,18 +78,24 @@ ipcMain.handle('login', async (_event, { email, password }) => {
   return result;
 });
 
+ipcMain.handle('logout', async () => {
+  smartClipboardRepository.setUseCloud(false);
+  clipboardUseCase.setCurrentUser(null);
+  await clipboardUseCase.loadCloudHistory('guest');
+  updateTrayMenu();
+  return { success: true };
+});
+
 async function startup() {
   try {
     if (process.env.DATABASE_URL) {
       await initDb();
     }
   } catch (err) {
-    console.error(i18n.ERRORS.DB_INIT_FAILED, err);
+    // DB init failed
   }
 
-  // Load local history on startup (Guest mode)
   await clipboardUseCase.loadCloudHistory('guest');
-
   createTray();
   createWindow();
   startClipboardPolling();
@@ -109,6 +111,7 @@ function registerShortcuts(shortcut: string) {
       } else {
         mainWindow.show();
         mainWindow.focus();
+        mainWindow.webContents.send('focus-search');
       }
     }
   });
@@ -125,7 +128,6 @@ function createWindow() {
       nodeIntegration: false,
     },
   });
-
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
 }
 
@@ -136,14 +138,10 @@ function createTray() {
 
 function updateTrayMenu() {
   const history = clipboardUseCase.getHistory();
-
-  // Notify renderer
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send('history-updated', history);
   }
-
   if (!tray) return;
-
   const contextMenu = Menu.buildFromTemplate([
     { label: i18n.APP.NAME, enabled: false },
     { type: 'separator' },
@@ -172,7 +170,6 @@ function startClipboardPolling() {
   setInterval(async () => {
     const text = clipboardService.readText();
     if (text && text !== lastClip) {
-      console.log(`[Clipboard] New content detected: ${text.substring(0, 20)}...`);
       lastClip = text;
       await clipboardUseCase.addClip(text, () => updateTrayMenu());
     }
@@ -180,7 +177,6 @@ function startClipboardPolling() {
 }
 
 app.whenReady().then(startup);
-
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });

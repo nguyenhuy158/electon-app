@@ -9,6 +9,7 @@ import { i18n } from '../../domain/i18n';
 export class ClipboardUseCase {
   private clipHistory: string[] = [];
   private currentUser: User | null = null;
+  private selectedIndex: number = -1;
 
   constructor(
     private clipboardRepository: ClipboardRepository,
@@ -21,6 +22,40 @@ export class ClipboardUseCase {
     this.currentUser = user;
   }
 
+  getSelectedIndex(): number {
+    return this.selectedIndex;
+  }
+
+  setSelectedIndex(index: number) {
+    if (index >= -1 && index < this.clipHistory.length) {
+      this.selectedIndex = index;
+    }
+  }
+
+  moveSelectionDown() {
+    if (this.clipHistory.length === 0) return;
+    if (this.selectedIndex < this.clipHistory.length - 1) {
+      this.selectedIndex++;
+    } else {
+      this.selectedIndex = 0;
+    }
+  }
+
+  moveSelectionUp() {
+    if (this.clipHistory.length === 0) return;
+    if (this.selectedIndex > 0) {
+      this.selectedIndex--;
+    } else {
+      this.selectedIndex = this.clipHistory.length - 1;
+    }
+  }
+
+  copySelected() {
+    if (this.selectedIndex >= 0 && this.selectedIndex < this.clipHistory.length) {
+      this.copyToClipboard(this.clipHistory[this.selectedIndex]);
+    }
+  }
+
   async addClip(text: string, onUpdate?: (history: string[]) => void) {
     const existingIndex = this.clipHistory.indexOf(text);
     if (existingIndex !== -1) {
@@ -31,8 +66,6 @@ export class ClipboardUseCase {
     if (this.clipHistory.length > this.historyLimit) {
       this.clipHistory.pop();
     }
-
-    console.log(`[ClipboardUseCase] Added clip, history size: ${this.clipHistory.length}`);
 
     if (onUpdate) {
       onUpdate(this.clipHistory);
@@ -47,7 +80,7 @@ export class ClipboardUseCase {
         });
         await this.clipboardRepository.save(clipToSave);
       } catch (err: any) {
-        console.error(i18n.ERRORS.SYNC_FAILED, err);
+        // Sync failed
       }
     }
   }

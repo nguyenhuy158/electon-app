@@ -46,12 +46,10 @@ export class LocalFileClipboardRepository extends ClipboardRepository {
   async save(clip: Clip): Promise<void> {
     const clips = this.readClips();
     clips.unshift(clip);
-    // Keep only last 100 clips locally
     this.writeClips(clips.slice(0, 100));
   }
 
   async getRecent(userId: string, limit: number): Promise<Clip[]> {
-    // For guest mode, we ignore userId or use a 'guest' constant
     const clips = this.readClips();
     return clips.slice(0, limit);
   }
