@@ -1,5 +1,5 @@
-import pytest
 from unittest.mock import MagicMock, patch
+
 from infrastructure.adapters.macos_clipboard import MacOSClipboardService
 
 

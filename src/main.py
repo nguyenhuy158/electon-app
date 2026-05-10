@@ -11,11 +11,12 @@ import webview
 from AppKit import NSApp
 from pynput import keyboard
 
+from application.use_cases.clipboard_use_case import ClipboardUseCase
+
 # Hexagonal imports
 from domain.constants.index import AppConstants
-from application.use_cases.clipboard_use_case import ClipboardUseCase
-from infrastructure.adapters.macos_clipboard import MacOSClipboardService
 from infrastructure.adapters.json_repository import JSONClipboardRepository
+from infrastructure.adapters.macos_clipboard import MacOSClipboardService
 
 
 def get_resource_path(relative_path):

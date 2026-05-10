@@ -1,5 +1,5 @@
-import pytest
 from unittest.mock import MagicMock
+
 from application.use_cases.clipboard_use_case import ClipboardUseCase
 from domain.constants.index import AppConstants
 

@@ -1,4 +1,5 @@
 from AppKit import NSPasteboard, NSStringPboardType
+
 from application.ports.interfaces import ClipboardService
 
 

@@ -1,6 +1,7 @@
 import json
 import os
 from unittest.mock import patch
+
 from infrastructure.adapters.json_repository import JSONClipboardRepository
 
 
