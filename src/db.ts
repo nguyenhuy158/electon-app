@@ -3,11 +3,15 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+const sslConfig = process.env.DATABASE_URL?.includes('localhost')
+  ? false
+  : {
+      rejectUnauthorized: false,
+    };
+
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: sslConfig,
 });
 
 export async function initDb(): Promise<void> {

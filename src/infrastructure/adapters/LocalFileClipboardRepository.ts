@@ -27,10 +27,13 @@ export class LocalFileClipboardRepository extends ClipboardRepository {
   private readClips(): Clip[] {
     try {
       const data = fs.readFileSync(this.filePath, 'utf8');
-      return JSON.parse(data).map((c: any) => new Clip({
-        ...c,
-        createdAt: new Date(c.createdAt)
-      }));
+      return JSON.parse(data).map(
+        (c: any) =>
+          new Clip({
+            ...c,
+            createdAt: new Date(c.createdAt),
+          })
+      );
     } catch {
       return [];
     }

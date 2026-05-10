@@ -14,10 +14,7 @@ export class WinstonLogger implements Logger {
 
     this.logger = winston.createLogger({
       level,
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.json(),
-      ),
+      format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
       transports: [
         new winston.transports.File({
           filename: path.join(logPath, 'error.log'),
@@ -32,11 +29,8 @@ export class WinstonLogger implements Logger {
     if (process.env.NODE_ENV !== 'production') {
       this.logger.add(
         new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.colorize(),
-            winston.format.simple(),
-          ),
-        }),
+          format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+        })
       );
     }
   }

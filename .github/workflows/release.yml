@@ -40,5 +40,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release: true
           # Skip signing on macOS for now
-          macos_certs: ""
-          macos_certs_password: ""
+          macos_certs: ''
+          macos_certs_password: ''

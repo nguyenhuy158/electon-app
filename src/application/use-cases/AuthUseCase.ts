@@ -35,7 +35,7 @@ export class AuthUseCase {
       await this.initClient(process.env.NEON_AUTH_URL || '');
     }
     if (!this.client) return { success: false, error: i18n.AUTH.CLIENT_NOT_INIT };
-    
+
     try {
       const result = await this.client.signUp.email({
         email,
@@ -49,10 +49,10 @@ export class AuthUseCase {
       }
 
       const neonUser = result.data.user;
-      
-      const user = await this.userRepository.create({ 
-        id: neonUser.id, 
-        email: neonUser.email 
+
+      const user = await this.userRepository.create({
+        id: neonUser.id,
+        email: neonUser.email,
       });
 
       return { success: true, user };
@@ -82,9 +82,9 @@ export class AuthUseCase {
 
       let user = await this.userRepository.findById(neonUser.id);
       if (!user) {
-        user = await this.userRepository.create({ 
-          id: neonUser.id, 
-          email: neonUser.email 
+        user = await this.userRepository.create({
+          id: neonUser.id,
+          email: neonUser.email,
         });
       }
 

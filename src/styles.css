@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   --color-primary: #201d1d;
@@ -24,7 +24,7 @@
   --color-danger: #ff3b30;
   --color-success: #30d158;
 
-  --font-mono: "Berkeley Mono", "monospace";
+  --font-mono: 'Berkeley Mono', 'monospace';
 
   --radius-sm: 4px;
 
@@ -63,7 +63,7 @@
   .btn-primary:hover {
     background-color: var(--color-ink-deep);
   }
-  
+
   .input-field {
     width: 100%;
     padding-left: 12px;

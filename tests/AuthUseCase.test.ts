@@ -13,18 +13,18 @@ describe('AuthUseCase', () => {
       findById: jest.fn(),
       create: jest.fn(),
     } as any;
-    
+
     process.env.NEON_AUTH_URL = 'https://test.neonauth.us-east-2.aws.neon.build/neondb/auth';
     useCase = new AuthUseCase(mockRepo);
-    
+
     // Inject mock client directly to avoid real network calls or SDK logic
     (useCase as any).client = {
       signUp: {
-        email: jest.fn()
+        email: jest.fn(),
       },
       signIn: {
-        email: jest.fn()
-      }
+        email: jest.fn(),
+      },
     };
   });
 
@@ -33,7 +33,7 @@ describe('AuthUseCase', () => {
       const neonUser = { id: 'neon_id', email: 'test@example.com' };
       ((useCase as any).client.signUp.email as jest.Mock).mockResolvedValue({
         data: { user: neonUser },
-        error: null
+        error: null,
       });
       mockRepo.create.mockResolvedValue(new User(neonUser));
 
@@ -46,7 +46,7 @@ describe('AuthUseCase', () => {
     it('should return error if registration fails', async () => {
       ((useCase as any).client.signUp.email as jest.Mock).mockResolvedValue({
         data: null,
-        error: { message: 'Email already exists' }
+        error: { message: 'Email already exists' },
       });
 
       const result = await useCase.register('test@example.com', 'pass123');
@@ -61,7 +61,7 @@ describe('AuthUseCase', () => {
       const neonUser = { id: 'neon_id', email: 'test@example.com' };
       ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
         data: { user: neonUser },
-        error: null
+        error: null,
       });
       mockRepo.findById.mockResolvedValue(null);
       mockRepo.create.mockResolvedValue(new User(neonUser));
@@ -77,7 +77,7 @@ describe('AuthUseCase', () => {
       const neonUser = { id: 'neon_id', email: 'test@example.com' };
       ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
         data: { user: neonUser },
-        error: null
+        error: null,
       });
       mockRepo.findById.mockResolvedValue(new User(neonUser));
 
@@ -90,7 +90,7 @@ describe('AuthUseCase', () => {
     it('should return error if login fails', async () => {
       ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
         data: null,
-        error: { message: 'Invalid credentials' }
+        error: { message: 'Invalid credentials' },
       });
 
       const result = await useCase.login('test@example.com', 'pass123');
@@ -100,7 +100,9 @@ describe('AuthUseCase', () => {
     });
 
     it('should return error if exception occurs during login', async () => {
-      ((useCase as any).client.signIn.email as jest.Mock).mockRejectedValue(new Error('Network error'));
+      ((useCase as any).client.signIn.email as jest.Mock).mockRejectedValue(
+        new Error('Network error')
+      );
 
       const result = await useCase.login('test@example.com', 'pass123');
 
@@ -111,7 +113,9 @@ describe('AuthUseCase', () => {
 
   describe('initialization and registration errors', () => {
     it('should handle registration exception', async () => {
-      ((useCase as any).client.signUp.email as jest.Mock).mockRejectedValue(new Error('Sign up error'));
+      ((useCase as any).client.signUp.email as jest.Mock).mockRejectedValue(
+        new Error('Sign up error')
+      );
 
       const result = await useCase.register('test@example.com', 'pass123');
 
@@ -122,7 +126,7 @@ describe('AuthUseCase', () => {
     it('should handle registration failure without message', async () => {
       ((useCase as any).client.signUp.email as jest.Mock).mockResolvedValue({
         data: null,
-        error: {}
+        error: {},
       });
 
       const result = await useCase.register('test@example.com', 'pass123');
@@ -134,7 +138,7 @@ describe('AuthUseCase', () => {
     it('should handle login failure without message', async () => {
       ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
         data: null,
-        error: {}
+        error: {},
       });
 
       const result = await useCase.login('test@example.com', 'pass123');

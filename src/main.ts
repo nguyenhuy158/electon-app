@@ -20,6 +20,7 @@ import { ClipboardUseCase } from './application/use-cases/ClipboardUseCase';
 let tray: Tray | null = null;
 let mainWindow: BrowserWindow | null = null;
 let lastClip: string = '';
+let currentShortcut: string = APP_CONSTANTS.SHORTCUTS.OPEN_PICKER;
 
 // Dependency Injection
 const userRepository = new PostgresUserRepository(pool);
@@ -39,6 +40,48 @@ const clipboardUseCase = new ClipboardUseCase(
   notificationService
 );
 
+// Register IPC handlers
+ipcMain.handle('get-shortcut', () => currentShortcut);
+ipcMain.handle('update-shortcut', (_event, shortcut: string) => {
+  try {
+    registerShortcuts(shortcut);
+    currentShortcut = shortcut;
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('get-history', () => clipboardUseCase.getHistory());
+
+ipcMain.handle('copy-to-clipboard', (_event, text: string) => {
+  clipboardUseCase.copyToClipboard(text);
+  mainWindow?.hide();
+  return { success: true };
+});
+
+ipcMain.handle('register', async (_event, { email, password }) => {
+  const result = await authUseCase.register(email, password);
+  if (result.success && result.user) {
+    smartClipboardRepository.setUseCloud(true);
+    clipboardUseCase.setCurrentUser(result.user as any);
+  }
+  return result;
+});
+
+ipcMain.handle('login', async (_event, { email, password }) => {
+  const result = await authUseCase.login(email, password);
+  if (result.success && result.user) {
+    smartClipboardRepository.setUseCloud(true);
+    clipboardUseCase.setCurrentUser(result.user as any);
+    if (result.user.id) {
+      await clipboardUseCase.loadCloudHistory(result.user.id);
+    }
+    updateTrayMenu();
+  }
+  return result;
+});
+
 async function startup() {
   try {
     if (process.env.DATABASE_URL) {
@@ -54,11 +97,12 @@ async function startup() {
   createTray();
   createWindow();
   startClipboardPolling();
-  registerShortcuts();
+  registerShortcuts(currentShortcut);
 }
 
-function registerShortcuts() {
-  globalShortcut.register(APP_CONSTANTS.SHORTCUTS.OPEN_PICKER, () => {
+function registerShortcuts(shortcut: string) {
+  globalShortcut.unregisterAll();
+  globalShortcut.register(shortcut, () => {
     if (mainWindow) {
       if (mainWindow.isVisible()) {
         mainWindow.hide();
@@ -91,9 +135,15 @@ function createTray() {
 }
 
 function updateTrayMenu() {
+  const history = clipboardUseCase.getHistory();
+
+  // Notify renderer
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('history-updated', history);
+  }
+
   if (!tray) return;
 
-  const history = clipboardUseCase.getHistory();
   const contextMenu = Menu.buildFromTemplate([
     { label: i18n.APP.NAME, enabled: false },
     { type: 'separator' },
@@ -122,34 +172,12 @@ function startClipboardPolling() {
   setInterval(async () => {
     const text = clipboardService.readText();
     if (text && text !== lastClip) {
+      console.log(`[Clipboard] New content detected: ${text.substring(0, 20)}...`);
       lastClip = text;
       await clipboardUseCase.addClip(text, () => updateTrayMenu());
     }
   }, APP_CONSTANTS.CLIPBOARD.POLLING_INTERVAL_MS);
 }
-
-// IPC Handlers for Auth
-ipcMain.handle('register', async (_event, { email, password }) => {
-  const result = await authUseCase.register(email, password);
-  if (result.success && result.user) {
-    smartClipboardRepository.setUseCloud(true);
-    clipboardUseCase.setCurrentUser(result.user as any);
-  }
-  return result;
-});
-
-ipcMain.handle('login', async (_event, { email, password }) => {
-  const result = await authUseCase.login(email, password);
-  if (result.success && result.user) {
-    smartClipboardRepository.setUseCloud(true);
-    clipboardUseCase.setCurrentUser(result.user as any);
-    if (result.user.id) {
-      await clipboardUseCase.loadCloudHistory(result.user.id);
-    }
-    updateTrayMenu();
-  }
-  return result;
-});
 
 app.whenReady().then(startup);
 
