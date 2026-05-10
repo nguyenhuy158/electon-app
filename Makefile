@@ -70,8 +70,14 @@ build: build-ui
 		src/main.py
 	@echo "Creating DMG..."
 	rm -f dist/QuickClip.dmg
-	hdiutil create -volname "QuickClip" -srcfolder dist/QuickClip.app -ov -format UDZO dist/QuickClip.dmg
+	rm -rf dist/dmg_temp
+	mkdir -p dist/dmg_temp
+	cp -R dist/QuickClip.app dist/dmg_temp/
+	ln -s /Applications dist/dmg_temp/Applications
+	hdiutil create -volname "QuickClip" -srcfolder dist/dmg_temp -ov -format UDZO dist/QuickClip.dmg
+	rm -rf dist/dmg_temp
 	@echo "DMG created at dist/QuickClip.dmg"
+
 
 clean:
 	rm -rf build dist *.spec .venv src/renderer/styles.css htmlcov
