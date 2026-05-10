@@ -1,15 +1,21 @@
-.PHONY: help install run build clean build-ui
+.PHONY: help install run build clean build-ui s i b c
 
 help:
 	@echo "Usage: make [target]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  install   Install Python and Node.js dependencies"
-	@echo "  run       Build UI and start the application in development mode"
-	@echo "  build     Build a standalone macOS application (.app)"
-	@echo "  build-ui  Compile Tailwind CSS"
-	@echo "  clean     Remove build artifacts"
-	@echo "  help      Show this help message"
+	@echo "  install (i)   Install Python and Node.js dependencies"
+	@echo "  run (s)       Build UI and start the application in development mode"
+	@echo "  build (b)     Build a standalone macOS application (.app)"
+	@echo "  build-ui      Compile Tailwind CSS"
+	@echo "  clean (c)     Remove build artifacts"
+	@echo "  help          Show this help message"
+
+# Shortcuts
+i: install
+s: run
+b: build
+c: clean
 
 install:
 	pip install -r requirements.txt
