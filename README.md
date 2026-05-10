@@ -17,6 +17,5 @@ cp .env.example .env
 ## Architecture
 Hexagonal (Domain, Application, Infrastructure).
 
-## Quality Control
-- **100% Coverage**: Enforced on `Domain` and `Application` layers via Jest.
-- **Git Hooks**: Pre-commit hook runs `make t` to prevent regression.
+## Ownership
+Maintained by **nguyenhuy158**.
