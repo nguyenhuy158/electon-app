@@ -18,24 +18,30 @@ b: build
 c: clean
 
 install:
-	pip install -r requirements.txt
+	python3 -m venv .venv
+	./.venv/bin/pip install -r requirements.txt
 	pnpm install
+
+# Shortcuts
+i: install
+s: run
+b: build
+c: clean
 
 build-ui:
 	npx tailwindcss -i src/renderer/src/styles.css -o src/renderer/styles.css
 
 run: build-ui
-	python src/main/index.py
+	./.venv/bin/python src/main/index.py
 
 # Smallest size build for macOS using PyInstaller or just zip
 build: build-ui
 	@echo "Building for macOS..."
-	pip install pyinstaller
-	pyinstaller --noconfirm --onefile --windowed --name "QuickClip" \
+	./.venv/bin/pip install pyinstaller
+	./.venv/bin/pyinstaller --noconfirm --onefile --windowed --name "QuickClip" \
 		--add-data "src/renderer/index.html:src/renderer" \
 		--add-data "src/renderer/styles.css:src/renderer" \
 		src/main/index.py
-	@echo "Build complete. Check dist/QuickClip.app"
 
 clean:
-	rm -rf build dist *.spec
+	rm -rf build dist *.spec .venv src/renderer/styles.css
