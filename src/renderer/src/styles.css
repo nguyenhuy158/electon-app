@@ -1,47 +1,46 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-primary: #201d1d;
-  --color-on-primary: #fdfcfc;
-  --color-ink: #201d1d;
-  --color-ink-deep: #0f0000;
-  --color-charcoal: #302c2c;
-  --color-body: #424245;
-  --color-mute: #646262;
-  --color-stone: #6e6e73;
-  --color-ash: #9a9898;
-  --color-canvas: #fdfcfc;
-  --color-surface-soft: #f8f7f7;
-  --color-surface-card: #f1eeee;
-  --color-surface-dark: #201d1d;
-  --color-surface-dark-elevated: #302c2c;
-  --color-hairline: rgba(15, 0, 0, 0.12);
-  --color-hairline-strong: #646262;
-  --color-on-dark: #fdfcfc;
-  --color-on-dark-mute: #9a9898;
+  --color-primary: #1a1a1a;
+  --color-on-primary: #ffffff;
+  --color-ink: #1a1a1a;
+  --color-ink-deep: #000000;
+  --color-body: #3c3c43;
+  --color-mute: #8e8e93;
+  --color-canvas: #ffffff;
+  --color-surface-soft: #f2f2f7;
+  --color-surface-card: #ffffff;
+  --color-hairline: rgba(0, 0, 0, 0.1);
   --color-accent: #007aff;
-  --color-warning: #ff9f0a;
   --color-danger: #ff3b30;
-  --color-success: #30d158;
+  --color-success: #34c759;
 
-  --font-mono: 'Berkeley Mono', 'monospace';
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
 
-  --radius-sm: 4px;
-
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 24px;
-  --spacing-xxl: 32px;
-  --spacing-section: 96px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
 }
 
 @layer base {
   body {
     background-color: var(--color-canvas);
     color: var(--color-ink);
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :root.dark {
+    --color-canvas: #1c1c1e;
+    --color-surface-soft: #2c2c2e;
+    --color-surface-card: #3a3a3c;
+    --color-ink: #ffffff;
+    --color-ink-deep: #ffffff;
+    --color-body: #ebebf5;
+    --color-mute: #8e8e93;
+    --color-hairline: rgba(255, 255, 255, 0.1);
+    --color-primary: #ffffff;
+    --color-on-primary: #1a1a1a;
   }
 }
 
@@ -49,47 +48,58 @@
   .btn-primary {
     background-color: var(--color-primary);
     color: var(--color-on-primary);
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    height: 36px;
+    padding: 8px 16px;
     border-radius: var(--radius-sm);
-    font-weight: 500;
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
   }
   .btn-primary:hover {
     background-color: var(--color-ink-deep);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
   }
 
   .input-field {
     width: 100%;
-    padding-left: 12px;
-    padding-right: 12px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    margin-top: 12px;
-    margin-bottom: 12px;
+    padding: 10px 14px;
     background-color: var(--color-surface-soft);
-    border-width: 1px;
-    border-color: var(--color-hairline);
+    border: 1px solid transparent;
     border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
+    font-size: 14px;
+    transition: all 0.2s ease;
     color: var(--color-ink);
   }
   .input-field:focus {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
+    outline: none;
     background-color: var(--color-canvas);
-    border-color: var(--color-ink);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
   }
 
-  .ascii-banner {
-    text-align: center;
-    font-size: 10px;
-    line-height: 1.1;
-    white-space: pre;
+  .history-item {
+    padding: 11px;
+    background-color: var(--color-surface-card);
+    border: 2px solid var(--color-hairline);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .history-item:hover {
+    border-color: var(--color-accent);
+    background-color: var(--color-surface-soft);
+  }
+  .history-item.selected {
+    border-color: var(--color-accent);
+    background-color: rgba(0, 122, 255, 0.05);
   }
 }

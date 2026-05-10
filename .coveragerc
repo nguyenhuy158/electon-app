@@ -1,0 +1,15 @@
+[run]
+source = src/main
+omit =
+    src/main/tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if __name__ == .__main__.:
+    webview.start
+    while True:
+    time.sleep
+    pass
+    @abstractmethod

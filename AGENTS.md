@@ -1,34 +1,32 @@
-# Agent Guide: QuickClip
+# Agent Guide: QuickClip (PyWebView Edition)
 
-## Architecture: Hexagonal (TypeScript)
+## Architecture: Hexagonal (Python)
 
-- **Domain** (`src/domain/`): Pure logic, models, and constants. No external dependencies.
-- **Application** (`src/application/`): Use Cases and Port interfaces.
-- **Infrastructure** (`src/infrastructure/`): Adapters (Neon/Postgres, Electron, Local FS).
-- **Entry Points**: `src/main.ts` (Main/DI root), `src/index.html` (Renderer), `src/preload.ts` (IPC Bridge).
+- **Domain** (`src/domain/`): Pure logic, models (`clip.py`), and constants (`index.py`).
+- **Application** (`src/application/`): Use Cases (`clipboard_use_case.py`) and Port interfaces.
+- **Infrastructure** (`src/infrastructure/`): Adapters for macOS Clipboard (`macos_clipboard.py`) and JSON storage (`json_repository.py`).
+- **Entry Points**: `src/main.py` (Backend + PyWebView setup), `src/renderer/index.html` (Frontend).
 
 ## Verified Commands (`Makefile`)
 
-- `make s`: Build (TSC + Tailwind v4) and start Electron.
-- `make t`: Run Jest tests.
-- `make build`: Explicit build step (`tsc` + CSS compilation + HTML copy).
+- `make i`: Install dependencies (`uv` for Python, `pnpm` for Tailwind).
+- `make s` / `make run`: Build UI and start app in development mode.
+- `make t`: Run `pytest` suite.
+- `make l` / `make f`: Lint or format Python code using `ruff`.
+- `make b`: Build standalone macOS `.app` and DMG using PyInstaller.
+- `make cov`: Run tests with coverage report.
 
 ## Critical Constraints
 
-- **Platform**: Support for **Linux and macOS only**.
-- **Centralized Constants**: Use `APP_CONSTANTS` in `src/domain/constants/index.ts` (includes global shortcuts).
-- **i18n**: No hardcoded UI strings. Use `i18n` catalog in `src/domain/i18n/`.
-- **No Comments**: Delete all comments (code must be self-documenting via naming).
-- **100% Coverage**: Required for `Domain` and `Application` layers (`make cov`).
+- **Platform**: **macOS only**. Uses `PyObjC` for native clipboard access and `AppKit` for window activation.
+- **Bridge**: JS calls Python via `window.pywebview.api`. A wrapper in `index.html` aliases this to `window.api`.
+- **I18n**: No hardcoded UI strings. Use `I18n` class in Python; JS fetches via `window.api.get_translations()`.
+- **Frontend Logic**: The source of truth for JS logic is the `<script>` tag in `src/renderer/index.html`. `src/renderer/src/main.ts` is a legacy/reference file and is NOT used in the build.
+- **Tailwind v4**: CSS source is `src/renderer/src/styles.css`, compiled to `src/renderer/styles.css`.
 
 ## Operational Gotchas
 
-- **Tailwind v4 Fix**: DO NOT use `@apply` with theme variables in `src/styles.css`; use standard CSS `var(--color-...)` to avoid build resolution errors.
-- **IPC Bridge**: Renderer **must** use `window.api`. Direct Node/Electron imports in renderer fail. Update `src/preload.ts` when adding IPC handlers.
-- **Auth (Neon)**:
-  - `NEON_AUTH_URL` must be the Auth endpoint.
-  - `callbackURL` must be an absolute URL (e.g., `http://localhost.com`) despite Electron's `file://` scheme.
-- **Storage**:
-  - **Guest Mode**: Local JSON at `~/.quickclip/clips.json`.
-  - **Smart Switch**: `SmartClipboardRepository` proxies between local and cloud based on auth state.
-- **Tray Icon**: Requires `icon.png` in root (configured via `APP_CONSTANTS.UI.TRAY_ICON_PATH`).
+- **Hot Reload**: `main.py` runs a background thread monitoring `index.html` and `styles.css`, triggering `location.reload()` on change.
+- **Global Hotkey**: Managed by `pynput`. Default is `cmd+shift+v`. If it fails to register, check macOS Accessibility/Input Monitoring permissions.
+- **Storage**: Local JSON at `~/.quickclip/clips.json`. Logs at `~/.quickclip/app.log`.
+- **Window Management**: Uses `frameless=True`. Dragging is enabled via `.pywebview-drag-region` class in HTML.
