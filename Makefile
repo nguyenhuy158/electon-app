@@ -1,4 +1,4 @@
-.PHONY: help install run build clean build-ui s i b c t l f cov sc
+.PHONY: help install run build clean build-ui s i b c t l f cov sc dev
 
 help:
 	@echo "Usage: make [target]"
@@ -6,7 +6,8 @@ help:
 	@echo "Targets:"
 	@echo "  install (i)   Install Python and Node.js dependencies"
 	@echo "  run (s)       Build UI and start the application in development mode"
-	@echo "  build (b)     Build a standalone macOS application (.app)"
+	@echo "  dev           Alias for run"
+	@echo "  build (b)     Build a standalone macOS application (.app) and DMG"
 	@echo "  build-ui      Compile Tailwind CSS"
 	@echo "  test (t)      Run Python tests using pytest"
 	@echo "  lint (l)      Lint code using ruff"
@@ -24,6 +25,9 @@ c: clean
 t: test
 l: lint
 f: format
+dev:
+	npx tailwindcss -i src/renderer/src/styles.css -o src/renderer/styles.css --watch &
+	./.venv/bin/python src/main/index.py
 
 install:
 	uv venv .venv
