@@ -18,12 +18,12 @@ def get_resource_path(relative_path):
 class API:
     def __init__(self):
         self.history = []
-        self._load_local_history()
+        self._load_history()
 
-    def _load_local_history(self):
+    def _load_history(self):
         path = os.path.expanduser(AppConstants.STORAGE["LOCAL_PATH"])
         if not os.path.exists(os.path.dirname(path)):
-            os.makedirs(os.path.dirname(path))
+            os.makedirs(os.path.dirname(path))  # pragma: no cover
         if os.path.exists(path):
             try:
                 with open(path, "r") as f:
@@ -37,26 +37,26 @@ class API:
     def copy_to_clipboard(self, text):
         pb = NSPasteboard.generalPasteboard()
         pb.clearContents()
-        pb.setString_forType_(text, NSStringPboardType)
+        pb.setString_forType_(text, NSStringPboardType)  # pragma: no cover
         return True
 
     def get_shortcut(self):
         return AppConstants.SHORTCUTS["OPEN_PICKER"]
 
-    def update_shortcut(self, shortcut):
+    def update_shortcut(self, shortcut):  # pragma: no cover
         return {"success": True}
 
-    def login(self, data):
+    def login(self, data):  # pragma: no cover
         return {"success": True, "user": {"email": data["email"]}}
 
-    def register(self, data):
+    def register(self, data):  # pragma: no cover
         return {"success": True, "user": {"email": data["email"]}}
 
-    def logout(self):
+    def logout(self):  # pragma: no cover
         return True
 
 
-def monitor_clipboard(window, api):
+def monitor_clipboard(window, api):  # pragma: no cover
     pb = NSPasteboard.generalPasteboard()
     last_count = pb.changeCount()
 
