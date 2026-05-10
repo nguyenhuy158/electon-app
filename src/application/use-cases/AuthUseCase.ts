@@ -16,10 +16,15 @@ export class AuthUseCase {
       console.error(i18n.AUTH.URL_NOT_CONFIG);
       return;
     }
+    this.doInit(url);
+  }
+
+  private async doInit(url: string) {
     console.log('Initializing Neon Auth with URL:', url);
     try {
-      const { createAuthClient } = await import('@neondatabase/auth');
-      this.client = createAuthClient(url);
+      const authPkg = await import('@neondatabase/auth');
+      const client = authPkg.createAuthClient(url);
+      this.client = client;
     } catch (e) {
       console.error(i18n.AUTH.CLIENT_NOT_INIT, e);
     }

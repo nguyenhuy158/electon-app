@@ -22,23 +22,30 @@ export class ClipboardUseCase {
   }
 
   async addClip(text: string, onUpdate?: (history: string[]) => void) {
-    if (!this.clipHistory.includes(text)) {
-      this.clipHistory.unshift(text);
-      if (this.clipHistory.length > this.historyLimit) {
-        this.clipHistory.pop();
-      }
+    if (this.clipHistory.includes(text)) {
+      return;
+    }
 
-      if (onUpdate) onUpdate(this.clipHistory);
+    this.clipHistory.unshift(text);
+    if (this.clipHistory.length > this.historyLimit) {
+      this.clipHistory.pop();
+    }
 
-      if (this.currentUser && this.currentUser.id && this.clipboardRepository) {
-        try {
-          await this.clipboardRepository.save(new Clip({ 
-            userId: this.currentUser.id, 
-            content: text 
-          }));
-        } catch (err) {
-          console.error('Sync failed:', err);
-        }
+    if (onUpdate) {
+      onUpdate(this.clipHistory);
+    }
+
+    if (this.clipboardRepository) {
+      const user = this.currentUser;
+      const userId = user ? user.id : 'guest';
+      try {
+        const clipToSave = new Clip({ 
+          userId, 
+          content: text 
+        });
+        await this.clipboardRepository.save(clipToSave);
+      } catch (err: any) {
+        console.error(i18n.ERRORS.SYNC_FAILED, err);
       }
     }
   }

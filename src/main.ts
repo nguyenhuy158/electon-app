@@ -8,9 +8,10 @@ import { i18n } from './domain/i18n';
 // Infrastructure Adapters
 import { PostgresUserRepository } from './infrastructure/adapters/PostgresUserRepository';
 import { PostgresClipboardRepository } from './infrastructure/adapters/PostgresClipboardRepository';
+import { LocalFileClipboardRepository } from './infrastructure/adapters/LocalFileClipboardRepository';
+import { SmartClipboardRepository } from './infrastructure/adapters/SmartClipboardRepository';
 import { ElectronClipboardService } from './infrastructure/adapters/ElectronClipboardService';
 import { ElectronNotificationService } from './infrastructure/adapters/ElectronNotificationService';
-import { WinstonLogger } from './infrastructure/adapters/WinstonLogger';
 
 // Use Cases
 import { AuthUseCase } from './application/use-cases/AuthUseCase';
@@ -21,29 +22,34 @@ let mainWindow: BrowserWindow | null = null;
 let lastClip: string = '';
 
 // Dependency Injection
-const logger = new WinstonLogger();
 const userRepository = new PostgresUserRepository(pool);
-const clipboardRepository = new PostgresClipboardRepository(pool);
+const cloudClipboardRepository = new PostgresClipboardRepository(pool);
+const localClipboardRepository = new LocalFileClipboardRepository();
+const smartClipboardRepository = new SmartClipboardRepository(
+  localClipboardRepository,
+  cloudClipboardRepository
+);
 const clipboardService = new ElectronClipboardService();
 const notificationService = new ElectronNotificationService();
 
 const authUseCase = new AuthUseCase(userRepository);
 const clipboardUseCase = new ClipboardUseCase(
-  clipboardRepository,
+  smartClipboardRepository,
   clipboardService,
   notificationService
 );
 
 async function startup() {
-  logger.info('Starting QuickClip...');
   try {
     if (process.env.DATABASE_URL) {
       await initDb();
-      logger.info('Database initialized');
     }
   } catch (err) {
-    logger.error('Failed to init DB', err);
+    console.error(i18n.ERRORS.DB_INIT_FAILED, err);
   }
+
+  // Load local history on startup (Guest mode)
+  await clipboardUseCase.loadCloudHistory('guest');
 
   createTray();
   createWindow();
@@ -111,7 +117,8 @@ function startClipboardPolling() {
 // IPC Handlers for Auth
 ipcMain.handle('register', async (_event, { email, password }) => {
   const result = await authUseCase.register(email, password);
-  if (result.success) {
+  if (result.success && result.user) {
+    smartClipboardRepository.setUseCloud(true);
     clipboardUseCase.setCurrentUser(result.user as any);
   }
   return result;
@@ -120,6 +127,7 @@ ipcMain.handle('register', async (_event, { email, password }) => {
 ipcMain.handle('login', async (_event, { email, password }) => {
   const result = await authUseCase.login(email, password);
   if (result.success && result.user) {
+    smartClipboardRepository.setUseCloud(true);
     clipboardUseCase.setCurrentUser(result.user as any);
     if (result.user.id) {
       await clipboardUseCase.loadCloudHistory(result.user.id);
