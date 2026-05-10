@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import ANY, MagicMock, patch
 
 from infrastructure.adapters.macos_clipboard import MacOSClipboardService
 
@@ -40,6 +40,3 @@ def test_get_change_count(mock_pb_class):
 
     assert count == 123
     mock_pb.changeCount.assert_called_once()
-
-
-from unittest.mock import ANY

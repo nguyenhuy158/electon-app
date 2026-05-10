@@ -15,6 +15,7 @@ from application.use_cases.clipboard_use_case import ClipboardUseCase
 
 # Hexagonal imports
 from domain.constants.index import AppConstants
+from domain.i18n.index import I18n
 from infrastructure.adapters.json_repository import JSONClipboardRepository
 from infrastructure.adapters.macos_clipboard import MacOSClipboardService
 
@@ -38,16 +39,45 @@ class API:
             self._window.hide()
         return True
 
+    def minimize(self):
+        if self._window:
+            self._window.minimize()
+        return True
+
+    def quit(self):
+        if self._window:
+            self._window.destroy()
+        sys.exit(0)
+
     def get_history(self):
         return self.use_case.get_history()
 
     def copy_to_clipboard(self, text):
         return self.use_case.copy_to_clipboard(text)
 
-    def get_shortcut(self):
-        return AppConstants.SHORTCUTS["OPEN_PICKER"]
+    def toggle_pin(self, clip_id):
+        success = self.use_case.toggle_pin(clip_id)
+        if success and self._window:
+            history_json = json.dumps(self.use_case.get_history())
+            self._window.evaluate_js(
+                f"if (window.onHistoryUpdate) window.onHistoryUpdate({history_json})"
+            )
+        return success
 
-    def update_shortcut(self, shortcut):
+    def get_translations(self):
+        return I18n.get_all_messages()
+
+    def get_shortcut(self):
+        return {
+            "open_picker": AppConstants.SHORTCUTS["OPEN_PICKER"],
+            "toggle_pin": AppConstants.SHORTCUTS["TOGGLE_PIN"],
+        }
+
+    def update_shortcut(self, data):
+        if "open_picker" in data:
+            AppConstants.SHORTCUTS["OPEN_PICKER"] = data["open_picker"]
+        if "toggle_pin" in data:
+            AppConstants.SHORTCUTS["TOGGLE_PIN"] = data["toggle_pin"]
         return {"success": True}
 
     def login(self, data):
@@ -106,7 +136,7 @@ def setup_global_shortcut(window):
         except Exception as e:
             print(f"Error activating window: {e}")
 
-    hotkey_str = "<cmd>+<shift>+v"
+    hotkey_str = AppConstants.SHORTCUTS["OPEN_PICKER"]
     print(f"⌨️ Registering global shortcut: {hotkey_str}")
 
     try:
@@ -132,6 +162,8 @@ if __name__ == "__main__":
         width=AppConstants.UI["WINDOW_WIDTH"],
         height=AppConstants.UI["WINDOW_HEIGHT"],
         resizable=True,
+        frameless=True,
+        easy_drag=True,
         min_size=(AppConstants.UI["MIN_WIDTH"], AppConstants.UI["MIN_HEIGHT"]),
     )
     api.set_window(window)

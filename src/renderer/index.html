@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>QuickClip Sync</title>
+    <title data-i18n="APP.TITLE">QuickClip Sync</title>
     <link rel="stylesheet" href="styles.css" />
     <style>
       .custom-scrollbar::-webkit-scrollbar {
@@ -19,23 +19,40 @@
       }
     </style>
   </head>
-  <body class="h-screen flex flex-col overflow-hidden bg-canvas text-body font-sans">
-    <!-- Header -->
-    <header class="flex items-center justify-between px-6 py-4 bg-canvas/80 backdrop-blur-md sticky top-0 z-20 border-b border-hairline shrink-0">
-      <div class="flex items-center gap-2">
+  <body class="h-screen flex flex-col overflow-hidden bg-canvas text-body font-sans select-none">
+    <!-- Header (Drag region) -->
+    <header class="flex items-center justify-between px-6 py-4 bg-canvas/80 backdrop-blur-md sticky top-0 z-20 border-b border-hairline shrink-0 pywebview-drag-region cursor-default">
+      <div class="flex items-center gap-2 pointer-events-none">
         <div class="w-6 h-6 bg-accent rounded-md flex items-center justify-center text-white">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
         </div>
-        <h1 class="text-sm font-semibold tracking-tight">QuickClip</h1>
+        <h1 class="text-sm font-semibold tracking-tight" data-i18n="APP.NAME">QuickClip</h1>
       </div>
       
-      <button
-        id="settings-toggle"
-        class="p-2 hover:bg-surface-soft rounded-full transition-all cursor-pointer text-mute hover:text-accent"
-        title="Settings"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-      </button>
+      <div class="flex items-center gap-1">
+        <button
+          id="minimize-btn"
+          class="p-2 hover:bg-surface-soft rounded-full transition-all cursor-pointer text-mute hover:text-accent"
+          title="Minimize"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+        <button
+          id="quit-btn"
+          class="p-2 hover:bg-surface-soft rounded-full transition-all cursor-pointer text-mute hover:text-danger"
+          title="Quit"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <button
+          id="settings-toggle"
+          class="p-2 hover:bg-surface-soft rounded-full transition-all cursor-pointer text-mute hover:text-accent"
+          data-i18n-title="SETTINGS.TITLE"
+          title="Settings"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </button>
+      </div>
     </header>
 
     <main class="flex-1 min-h-0 relative">
@@ -48,6 +65,7 @@
           <input
             type="text"
             id="search-input"
+            data-i18n-placeholder="HISTORY.SEARCH_PLACEHOLDER"
             placeholder="Search clipboard..."
             class="input-field pl-10"
           />
@@ -61,36 +79,79 @@
           <button id="settings-back" class="p-2 hover:bg-surface-soft rounded-full transition-colors cursor-pointer text-mute">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
           </button>
-          <h2 class="text-lg font-semibold">Settings</h2>
+          <h2 class="text-lg font-semibold" data-i18n="SETTINGS.TITLE">Settings</h2>
         </div>
         
         <div class="space-y-6 overflow-y-auto pr-2 custom-scrollbar">
           <section class="space-y-3">
-            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1">Account</h3>
+            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1" data-i18n="SETTINGS.ACCOUNT">Account</h3>
             <div class="bg-surface-soft p-4 rounded-xl border border-hairline">
               <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 bg-canvas rounded-full flex items-center justify-center border border-hairline text-mute">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
                 <div>
-                  <p class="text-sm font-semibold" id="user-email">Guest User</p>
-                  <p class="text-xs text-mute" id="sync-status">Local storage only</p>
+                  <p class="text-sm font-semibold" id="user-email" data-i18n="AUTH.GUEST_USER">Guest User</p>
+                  <p class="text-xs text-mute" id="sync-status" data-i18n="AUTH.SYNC_OFFLINE">Local storage only</p>
                 </div>
               </div>
-              <button id="auth-trigger-btn" class="btn-primary w-full shadow-sm">
+              <button id="auth-trigger-btn" class="btn-primary w-full shadow-sm" data-i18n="AUTH.SIGN_IN_TO_SYNC">
                 Sign In to Sync
               </button>
-              <button id="logout-btn" class="btn-primary w-full hidden bg-white !text-danger border border-danger/20 hover:bg-danger/5">
+              <button id="logout-btn" class="btn-primary w-full hidden bg-white !text-danger border border-danger/20 hover:bg-danger/5" data-i18n="AUTH.SIGN_OUT">
                 Sign Out
               </button>
             </div>
           </section>
 
           <section class="space-y-3">
-            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1">Global Shortcut</h3>
+            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1" data-i18n="SETTINGS.GLOBAL_SHORTCUT">Global Shortcut</h3>
             <div class="flex gap-2">
-              <input type="text" id="shortcut-input" class="input-field !m-0" placeholder="e.g. Cmd+Shift+V" />
-              <button id="save-shortcut-btn" class="btn-primary px-4 shrink-0">Save</button>
+              <input type="text" id="shortcut-input" class="input-field !m-0" data-i18n-placeholder="SETTINGS.SHORTCUT_PLACEHOLDER" placeholder="e.g. Cmd+Shift+V" />
+              <button id="save-shortcut-btn" class="btn-primary px-4 shrink-0" data-i18n="SETTINGS.SAVE">Save</button>
+            </div>
+            <p id="shortcut-status" class="text-[11px] h-4 px-1"></p>
+          </section>
+
+          <section class="pt-4 border-t border-hairline">
+            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-3" data-i18n="SETTINGS.KEYBOARD_SHORTCUTS">Keyboard Shortcuts</h3>
+            <div class="grid grid-cols-2 gap-x-8 gap-y-2 px-1">
+              <div class="flex justify-between text-xs">
+                <span class="text-mute" data-i18n="SETTINGS.SEARCH">Search</span>
+                <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">/</kbd>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-mute" data-i18n="SETTINGS.SELECT">Select</span>
+                <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">1-9</kbd>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-mute" data-i18n="SETTINGS.NAVIGATE">Navigate</span>
+                <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">j / k</kbd>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-mute" data-i18n="SETTINGS.COPY">Copy</span>
+                <kbd class="bg-surface-soft px-1.5 py-0.5 rounded border border-hairline font-mono text-[10px]">Enter</kbd>
+              </div>
+            </div>
+          </section>
+
+
+          <section class="space-y-3">
+            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1">Global Shortcut</h3>
+            <div class="space-y-3">
+              <div>
+                <label class="text-[10px] text-mute px-1 mb-1 block">Open Picker</label>
+                <div class="flex gap-2">
+                  <input type="text" id="shortcut-input" class="input-field !m-0" placeholder="e.g. Cmd+Shift+V" />
+                </div>
+              </div>
+              <div>
+                <label class="text-[10px] text-mute px-1 mb-1 block">Toggle Pin (In-app)</label>
+                <div class="flex gap-2">
+                  <input type="text" id="pin-shortcut-input" class="input-field !m-0" placeholder="e.g. Ctrl+Enter" />
+                </div>
+              </div>
+              <button id="save-shortcut-btn" class="btn-primary w-full mt-2 shadow-sm">Save Shortcuts</button>
             </div>
             <p id="shortcut-status" class="text-[11px] h-4 px-1"></p>
           </section>
@@ -125,22 +186,22 @@
           <button id="auth-back" class="p-2 hover:bg-surface-soft rounded-full transition-colors cursor-pointer text-mute">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
           </button>
-          <h2 id="form-title" class="text-lg font-semibold">Sign In</h2>
+          <h2 id="form-title" class="text-lg font-semibold" data-i18n="AUTH.SIGN_IN">Sign In</h2>
         </div>
         
         <div class="space-y-4">
           <div>
-            <label class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-1 block">Email</label>
+            <label class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-1 block" data-i18n="AUTH.EMAIL_LABEL">Email</label>
             <input type="email" id="email" placeholder="name@example.com" required class="input-field !m-0" />
           </div>
           <div>
-            <label class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-1 block">Password</label>
+            <label class="text-[11px] font-bold uppercase text-mute tracking-wider px-1 mb-1 block" data-i18n="AUTH.PASSWORD_LABEL">Password</label>
             <input type="password" id="password" placeholder="••••••••" required class="input-field !m-0" />
           </div>
-          <button id="submit-btn" class="btn-primary w-full mt-2 shadow-md">Continue</button>
+          <button id="submit-btn" class="btn-primary w-full mt-2 shadow-md" data-i18n="AUTH.CONTINUE">Continue</button>
           
           <button id="toggle-link" class="w-full text-center text-xs text-mute hover:text-accent transition-colors py-2">
-            Don't have an account? <span class="font-semibold text-accent">Sign Up</span>
+            <span data-i18n="AUTH.NEED_ACCOUNT">Don't have an account?</span> <span class="font-semibold text-accent" data-i18n="AUTH.SIGN_UP">Sign Up</span>
           </button>
         </div>
         
@@ -156,6 +217,9 @@
         getShortcut: () => window.pywebview ? window.pywebview.api.get_shortcut() : Promise.resolve(''),
         updateShortcut: (s) => window.pywebview ? window.pywebview.api.update_shortcut(s) : Promise.resolve({ success: true }),
         copyToClipboard: (t) => { if (window.pywebview) window.pywebview.api.copy_to_clipboard(t); },
+        togglePin: (id) => window.pywebview ? window.pywebview.api.toggle_pin(id) : Promise.resolve(true),
+        minimize: () => window.pywebview ? window.pywebview.api.minimize() : Promise.resolve(true),
+        quit: () => window.pywebview ? window.pywebview.api.quit() : Promise.resolve(true),
         login: (d) => window.pywebview ? window.pywebview.api.login(d) : Promise.resolve({ success: true }),
         register: (d) => window.pywebview ? window.pywebview.api.register(d) : Promise.resolve({ success: true }),
         logout: () => window.pywebview ? window.pywebview.api.logout() : Promise.resolve(true)
@@ -171,6 +235,9 @@
           getHistory: () => pyApi.get_history(),
           getShortcut: () => pyApi.get_shortcut(),
           updateShortcut: (s) => pyApi.update_shortcut(s),
+          togglePin: (id) => pyApi.toggle_pin(id),
+          minimize: () => pyApi.minimize(),
+          quit: () => pyApi.quit(),
           copyToClipboard: (t) => {
             pyApi.copy_to_clipboard(t);
             pyApi.hide();
@@ -191,6 +258,8 @@
         settingsView = document.getElementById('settings-view'),
         authForm = document.getElementById('auth-form');
       const settingsToggle = document.getElementById('settings-toggle'),
+        minimizeBtn = document.getElementById('minimize-btn'),
+        quitBtn = document.getElementById('quit-btn'),
         settingsBack = document.getElementById('settings-back'),
         authBack = document.getElementById('auth-back');
       const formTitle = document.getElementById('form-title'),
@@ -202,6 +271,7 @@
         userEmailDisplay = document.getElementById('user-email'),
         syncStatusDisplay = document.getElementById('sync-status');
       const shortcutInput = document.getElementById('shortcut-input'),
+        pinShortcutInput = document.getElementById('pin-shortcut-input'),
         saveShortcutBtn = document.getElementById('save-shortcut-btn'),
         shortcutStatus = document.getElementById('shortcut-status');
       const historyList = document.getElementById('history-list'),
@@ -209,8 +279,8 @@
 
       const renderHistory = (filter = '') => {
         historyList.innerHTML = '';
-        filteredHistory = fullHistory.filter((t) => 
-          typeof t === 'string' && t.toLowerCase().includes(filter.toLowerCase())
+        filteredHistory = fullHistory.filter((item) => 
+          item && typeof item.content === 'string' && item.content.toLowerCase().includes(filter.toLowerCase())
         );
         if (fullHistory.length === 0) {
           historyList.innerHTML =
@@ -225,17 +295,31 @@
         if (localSelectedIndex >= filteredHistory.length)
           localSelectedIndex = filteredHistory.length - 1;
 
-        filteredHistory.forEach((text, i) => {
+        filteredHistory.forEach((itemData, i) => {
           const item = document.createElement('div'),
-            isSel = i === localSelectedIndex;
+            isSel = i === localSelectedIndex,
+            isPinned = itemData.is_pinned;
           item.className = `p-3 bg-surface-card border rounded-sm cursor-pointer group transition-all flex items-start gap-3 ${isSel ? 'border-accent ring-1 ring-accent' : 'border-hairline hover:border-accent'}`;
           item.innerHTML = `
             <span class="text-[10px] ${isSel ? 'text-accent font-bold' : 'text-mute'} font-mono mt-0.5">${i + 1}</span>
-            <div class="flex-1 min-w-0"><div class="text-[13px] ${isSel ? 'text-accent font-bold' : 'text-primary'} break-words whitespace-pre-wrap">${text.length > 100 ? text.substring(0, 97) + '...' : text}</div></div>
-            <div class="text-[10px] ${isSel ? 'text-accent' : 'text-mute'} group-hover:text-accent font-mono mt-0.5">${isSel ? '►' : '↵'}</div>`;
-          item.onclick = () => {
+            <div class="flex-1 min-w-0">
+              <div class="text-[13px] ${isSel ? 'text-accent font-bold' : 'text-primary'} break-words whitespace-pre-wrap">${itemData.content.length > 100 ? itemData.content.substring(0, 97) + '...' : itemData.content}</div>
+            </div>
+            <div class="flex items-center gap-2 mt-0.5">
+               <button class="pin-btn p-1 hover:bg-surface-soft rounded-full transition-colors ${isPinned ? 'text-accent' : 'text-mute opacity-0 group-hover:opacity-100'}" title="${isPinned ? 'Unpin' : 'Pin'}">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="${isPinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2a2 2 0 0 0 1.27 1.87L12 18.22l7.73-6.35A2 2 0 0 0 21 10z"></path><line x1="12" y1="18" x2="12" y2="22"></line></svg>
+               </button>
+               <div class="text-[10px] ${isSel ? 'text-accent' : 'text-mute'} group-hover:text-accent font-mono">${isSel ? '►' : '↵'}</div>
+            </div>`;
+          
+          item.onclick = (e) => {
+            if (e.target.closest('.pin-btn')) {
+              e.stopPropagation();
+              window.api.togglePin(itemData.id);
+              return;
+            }
             localSelectedIndex = i;
-            window.api.copyToClipboard(text);
+            window.api.copyToClipboard(itemData.content);
           };
           historyList.appendChild(item);
           if (isSel) item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -265,7 +349,7 @@
         }
         if (e.key >= '1' && e.key <= '9' && !e.ctrlKey && !e.metaKey && !e.altKey) {
           const idx = parseInt(e.key) - 1;
-          if (filteredHistory[idx]) window.api.copyToClipboard(filteredHistory[idx]);
+          if (filteredHistory[idx]) window.api.copyToClipboard(filteredHistory[idx].content);
           return;
         }
         if (document.activeElement !== searchInput) {
@@ -276,12 +360,24 @@
             localSelectedIndex =
               localSelectedIndex <= 0 ? (filteredHistory.length || 1) - 1 : localSelectedIndex - 1;
             renderHistory(searchInput.value);
-          } else if (e.key === 'Enter' && localSelectedIndex !== -1)
-            window.api.copyToClipboard(filteredHistory[localSelectedIndex]);
+          } else if (e.key === 'Enter') {
+            if (e.ctrlKey || e.metaKey) {
+                // Check if current shortcut matches (default to Ctrl/Cmd + Enter)
+                if (localSelectedIndex !== -1) {
+                    window.api.togglePin(filteredHistory[localSelectedIndex].id);
+                }
+            } else if (localSelectedIndex !== -1) {
+                window.api.copyToClipboard(filteredHistory[localSelectedIndex].content);
+            }
+          }
         } else if (e.key === 'Enter' && filteredHistory.length > 0) {
-          window.api.copyToClipboard(
-            filteredHistory[localSelectedIndex === -1 ? 0 : localSelectedIndex]
-          );
+          if (e.ctrlKey || e.metaKey) {
+            window.api.togglePin(filteredHistory[localSelectedIndex === -1 ? 0 : localSelectedIndex].id);
+          } else {
+            window.api.copyToClipboard(
+                filteredHistory[localSelectedIndex === -1 ? 0 : localSelectedIndex].content
+            );
+          }
         }
       });
 
@@ -289,12 +385,18 @@
         historyView.classList.add('hidden');
         settingsView.classList.remove('hidden');
         settingsToggle.classList.add('hidden');
+        minimizeBtn.classList.add('hidden');
+        quitBtn.classList.add('hidden');
       };
       settingsBack.onclick = () => {
         settingsView.classList.add('hidden');
         historyView.classList.remove('hidden');
         settingsToggle.classList.remove('hidden');
+        minimizeBtn.classList.remove('hidden');
+        quitBtn.classList.remove('hidden');
       };
+      minimizeBtn.onclick = () => window.api.minimize();
+      quitBtn.onclick = () => window.api.quit();
       authTriggerBtn.onclick = () => authForm.classList.remove('hidden');
       authBack.onclick = () => authForm.classList.add('hidden');
 
@@ -309,8 +411,9 @@
 
       const loadData = async () => {
         try {
-          const shortcut = await window.api.getShortcut();
-          shortcutInput.value = typeof shortcut === 'string' ? shortcut : '';
+          const shortcuts = await window.api.getShortcut();
+          shortcutInput.value = shortcuts.open_picker || '';
+          pinShortcutInput.value = shortcuts.toggle_pin || '';
           
           fullHistory = await window.api.getHistory();
           renderHistory();
@@ -321,14 +424,21 @@
       loadData();
 
       saveShortcutBtn.onclick = async () => {
-        const val = shortcutInput.value.trim();
-        if (!val) return;
+        const openPicker = shortcutInput.value.trim();
+        const togglePin = pinShortcutInput.value.trim();
+        
         saveShortcutBtn.disabled = true;
         shortcutStatus.innerText = 'Updating...';
-        const res = await window.api.updateShortcut(val);
+        
+        const res = await window.api.updateShortcut({ 
+          open_picker: openPicker, 
+          toggle_pin: togglePin 
+        });
+        
         shortcutStatus.innerText = res.success ? 'Updated!' : 'Error: ' + res.error;
         shortcutStatus.className =
           'text-[10px] mt-2 ' + (res.success ? 'text-success' : 'text-danger');
+        
         setTimeout(() => {
           shortcutStatus.innerText = '';
           saveShortcutBtn.disabled = false;

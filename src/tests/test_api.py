@@ -18,7 +18,12 @@ def test_api_methods():
     api.copy_to_clipboard("test")
     mock_use_case.copy_to_clipboard.assert_called_once_with("test")
 
-    assert api.get_shortcut() == "Command+Shift+V"
+    shortcut = api.get_shortcut()
+    assert shortcut["open_picker"] == "<cmd>+<shift>+v"
+    assert shortcut["toggle_pin"] == "Control+Enter"
+
+    translations = api.get_translations()
+    assert translations["APP"]["NAME"] == "QuickClip"
     assert api.update_shortcut("Ctrl+C") == {"success": True}
     assert api.logout() is True
 

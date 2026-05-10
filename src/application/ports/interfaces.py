@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any, List
 
 
 class ClipboardService(ABC):
@@ -13,9 +14,9 @@ class ClipboardService(ABC):
 
 class ClipboardRepository(ABC):
     @abstractmethod
-    def save(self, text: str):
+    def save_all(self, clips: List[Any]):
         pass
 
     @abstractmethod
-    def get_all(self):
+    def get_all(self) -> List[Any]:
         pass

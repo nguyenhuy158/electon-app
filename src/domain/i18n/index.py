@@ -3,19 +3,40 @@ from .vi import MESSAGES as VI_MESSAGES
 
 
 class I18n:
-    def __init__(self, locale="en"):
-        self.locale = locale
-        self.catalogs = {"en": EN_MESSAGES, "vi": VI_MESSAGES}
+    _messages = {"en": EN_MESSAGES, "vi": VI_MESSAGES}
+    _current_locale = "en"
 
-    def t(self, key_path):
-        keys = key_path.split(".")
-        content = self.catalogs.get(self.locale, self.catalogs["en"])
+    @classmethod
+    def set_locale(cls, locale):
+        if locale in cls._messages:
+            cls._current_locale = locale
+
+    @classmethod
+    def get_locale(cls):
+        return cls._current_locale
+
+    @classmethod
+    def t(cls, key, **kwargs):
+        keys = key.split(".")
+        value = cls._messages.get(cls._current_locale, {})
+
         for k in keys:
-            if isinstance(content, dict) and k in content:
-                content = content[k]
+            if isinstance(value, dict):
+                value = value.get(k, key)
             else:
-                return key_path
-        return content
+                return key
+
+        if isinstance(value, str) and kwargs:
+            try:
+                return value.format(**kwargs)
+            except KeyError:
+                return value
+
+        return value if isinstance(value, (str, dict)) else key
+
+    @classmethod
+    def get_all_messages(cls):
+        return cls._messages.get(cls._current_locale, {})
 
 
-i18n = I18n()
+i18n = I18n

@@ -10,7 +10,7 @@ class MockService(ClipboardService):
 
 
 class MockRepo(ClipboardRepository):
-    def save(self, text: str):
+    def save_all(self, clips: list):
         pass
 
     def get_all(self) -> list:
