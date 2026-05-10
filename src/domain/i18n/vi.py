@@ -65,6 +65,8 @@ MESSAGES = {
         "THEME_LIGHT": "Sáng",
         "THEME_DARK": "Tối",
         "THEME_SYSTEM": "Hệ thống",
+        "LAST_SYNCED": "Đồng bộ lần cuối: {time}",
+        "NEVER": "Chưa bao giờ",
     },
     "HISTORY": {
         "SEARCH_PLACEHOLDER": "Tìm kiếm trong bộ nhớ tạm...",

@@ -65,6 +65,8 @@ MESSAGES = {
         "THEME_LIGHT": "Light",
         "THEME_DARK": "Dark",
         "THEME_SYSTEM": "System",
+        "LAST_SYNCED": "Last synced: {time}",
+        "NEVER": "Never",
     },
     "HISTORY": {
         "SEARCH_PLACEHOLDER": "Search clipboard...",

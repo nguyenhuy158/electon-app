@@ -123,7 +123,10 @@ class API:
 
     def force_sync(self):
         success = self.use_case.sync()
-        return {"success": success}
+        return {"success": success, "last_sync_time": self.use_case.last_sync_time}
+
+    def get_last_sync_time(self):
+        return self.use_case.last_sync_time
 
     def login(self, data):
         return {"success": True, "user": {"email": data["email"]}}
@@ -173,12 +176,15 @@ def hot_reload(window):
                     window.evaluate_js("location.reload()")
 
 
-def auto_sync_task(use_case):
+def auto_sync_task(window, use_case):
     while True:
         try:
             if AppConstants.SYNC["AUTO_SYNC"]:
                 logger.info("Auto-syncing...")
-                use_case.sync()
+                if use_case.sync():
+                    last_sync = use_case.last_sync_time
+                    js = f"if (window.onSyncComplete) window.onSyncComplete({last_sync})"
+                    window.evaluate_js(js)
         except Exception as e:
             logger.error(f"Error in auto-sync task: {e}")
         time.sleep(AppConstants.SYNC["INTERVAL_SECONDS"])
@@ -291,7 +297,7 @@ if __name__ == "__main__":
     t = threading.Thread(target=monitor_clipboard, args=(window, use_case), daemon=True)
     t.start()
 
-    sync_t = threading.Thread(target=auto_sync_task, args=(use_case,), daemon=True)
+    sync_t = threading.Thread(target=auto_sync_task, args=(window, use_case), daemon=True)
     sync_t.start()
 
     hr = threading.Thread(target=hot_reload, args=(window,), daemon=True)

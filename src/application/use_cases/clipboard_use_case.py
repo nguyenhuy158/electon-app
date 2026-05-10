@@ -12,6 +12,7 @@ class ClipboardUseCase:
         self.clipboard_service = clipboard_service
         self.clipboard_repository = clipboard_repository
         self.history = self.clipboard_repository.get_all()
+        self.last_sync_time = None
 
     def get_history(self):
         return [clip.to_dict() for clip in self.history]
@@ -78,4 +79,5 @@ class ClipboardUseCase:
         # In a real app, this would push/pull from a remote API
         # For now, we just simulate a delay
         time.sleep(1)
+        self.last_sync_time = time.time()
         return True
