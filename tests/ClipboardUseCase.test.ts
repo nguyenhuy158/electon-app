@@ -4,6 +4,7 @@ import { ClipboardService } from '../src/application/ports/ClipboardService';
 import { NotificationService } from '../src/application/ports/NotificationService';
 import { User } from '../src/domain/models/User';
 import { Clip } from '../src/domain/models/Clip';
+import { i18n } from '../src/domain/i18n';
 
 describe('ClipboardUseCase', () => {
   let mockRepo: jest.Mocked<ClipboardRepository>;
@@ -56,8 +57,19 @@ describe('ClipboardUseCase', () => {
     mockRepo.save.mockRejectedValue(new Error('DB Error'));
     useCase.setCurrentUser(new User({ id: 'u1', email: 'test@example.com' }));
     await useCase.addClip('error test');
-    expect(consoleSpy).toHaveBeenCalledWith('Sync failed:', expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith(i18n.ERRORS.SYNC_FAILED, expect.any(Error));
     consoleSpy.mockRestore();
+  });
+
+  test('addClip should work without repo', async () => {
+    const noRepoUseCase = new ClipboardUseCase(null as any, mockService, mockNotify, 3);
+    await noRepoUseCase.addClip('no repo test');
+    expect(noRepoUseCase.getHistory()).toEqual(['no repo test']);
+  });
+
+  test('addClip should work without onUpdate', async () => {
+    await useCase.addClip('no callback test');
+    expect(useCase.getHistory()).toContain('no callback test');
   });
 
   test('loadCloudHistory should return empty if no repo', async () => {
