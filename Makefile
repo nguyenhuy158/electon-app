@@ -30,7 +30,7 @@ dev:
 	./.venv/bin/python src/main.py
 
 install:
-	uv venv .venv
+	uv venv .venv --clear
 	uv pip install -r requirements.txt
 	pnpm install
 
