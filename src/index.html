@@ -16,7 +16,8 @@
       <input type="email" id="email" placeholder="[email]" required class="input-field" />
       <input type="password" id="password" placeholder="[password]" required class="input-field" />
       <button id="submit-btn" class="btn-primary w-full mt-2">Login</button>
-      <div class="toggle text-[14px] text-mute underline text-center mt-4 cursor-pointer" id="toggle-link">[+] No account? Register</div>
+      <div class="toggle text-[14px] font-bold text-center mt-4 cursor-pointer" id="guest-btn">[>] Continue as Guest</div>
+      <div class="toggle text-[14px] text-mute underline text-center mt-2 cursor-pointer" id="toggle-link">[+] No account? Register</div>
       <div id="status" class="mt-6 p-3 rounded-sm hidden text-[14px] bg-surface-card border border-hairline"></div>
     </div>
 
@@ -29,7 +30,7 @@
       </div>
       <h1 class="text-[16px] font-bold uppercase tracking-wider mb-4">Active</h1>
       <p class="mb-2">[+] Sync for: <strong id="user-email" class="font-bold"></strong></p>
-      <p class="mb-4">[+] Clipboard history is being synced to database.</p>
+      <p class="mb-4" id="sync-status">[+] Clipboard history is being synced to database.</p>
       <button onclick="location.reload()" class="btn-primary w-full">Logout</button>
     </div>
 
@@ -38,7 +39,15 @@
       const formTitle = document.getElementById('form-title');
       const submitBtn = document.getElementById('submit-btn');
       const toggleLink = document.getElementById('toggle-link');
+      const guestBtn = document.getElementById('guest-btn');
       const status = document.getElementById('status');
+
+      guestBtn.onclick = () => {
+        document.getElementById('auth-form').classList.add('hidden');
+        document.getElementById('user-info').classList.remove('hidden');
+        document.getElementById('user-email').innerText = 'Guest';
+        document.getElementById('sync-status').innerText = '[+] Offline mode: saving locally at ~/.quickclip';
+      };
 
       toggleLink.onclick = () => {
         isLogin = !isLogin;
@@ -65,6 +74,7 @@
           document.getElementById('auth-form').classList.add('hidden');
           document.getElementById('user-info').classList.remove('hidden');
           document.getElementById('user-email').innerText = result.user.email;
+          document.getElementById('sync-status').innerText = '[+] Clipboard history is being synced to database.';
         } else {
           status.innerText = 'Error: ' + result.error;
           status.classList.add('text-danger');
