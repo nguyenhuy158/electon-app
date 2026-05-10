@@ -27,7 +27,7 @@ l: lint
 f: format
 dev:
 	npx tailwindcss -i src/renderer/src/styles.css -o src/renderer/styles.css --watch &
-	./.venv/bin/python src/main/index.py
+	./.venv/bin/python src/main.py
 
 install:
 	uv venv .venv
@@ -38,10 +38,10 @@ build-ui:
 	npx tailwindcss -i src/renderer/src/styles.css -o src/renderer/styles.css
 
 run: build-ui
-	./.venv/bin/python src/main/index.py
+	./.venv/bin/python src/main.py
 
 test:
-	./.venv/bin/pytest src/main
+	./.venv/bin/pytest src
 
 lint:
 	./.venv/bin/ruff check .
@@ -50,7 +50,7 @@ format:
 	./.venv/bin/ruff format .
 
 cov:
-	./.venv/bin/pytest --cov=src/main src/main --cov-report=term-missing --cov-report=html
+	./.venv/bin/pytest --cov=src src --cov-report=term-missing --cov-report=html
 
 sc:
 	open htmlcov/index.html
@@ -64,7 +64,7 @@ build: build-ui
 		--add-data "src/renderer/index.html:src/renderer" \
 		--add-data "src/renderer/styles.css:src/renderer" \
 		--add-data "icon.png:." \
-		src/main/index.py
+		src/main.py
 	@echo "Creating DMG..."
 	rm -f dist/QuickClip.dmg
 	hdiutil create -volname "QuickClip" -srcfolder dist/QuickClip.app -ov -format UDZO dist/QuickClip.dmg

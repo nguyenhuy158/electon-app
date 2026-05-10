@@ -1,4 +1,4 @@
-from domain.constants.index import AppConstants
+from src.domain.constants.index import AppConstants
 
 
 def test_constants_structure():

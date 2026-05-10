@@ -1,4 +1,4 @@
-from application.ports.interfaces import ClipboardRepository, ClipboardService
+from src.application.ports.interfaces import ClipboardRepository, ClipboardService
 
 
 class MockService(ClipboardService):

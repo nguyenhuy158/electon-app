@@ -1,4 +1,4 @@
-from domain.i18n.index import i18n
+from src.domain.i18n.index import i18n
 
 
 def test_i18n_translation():
