@@ -51,6 +51,18 @@
     padding: 0;
     border: 0 solid;
   }
+  :root.dark {
+    --color-canvas: #1c1c1e;
+    --color-surface-soft: #2c2c2e;
+    --color-surface-card: #3a3a3c;
+    --color-ink: #ffffff;
+    --color-ink-deep: #ffffff;
+    --color-body: #ebebf5;
+    --color-mute: #8e8e93;
+    --color-hairline: rgba(255, 255, 255, 0.1);
+    --color-primary: #ffffff;
+    --color-on-primary: #1a1a1a;
+  }
   html, :host {
     line-height: 1.5;
     -webkit-text-size-adjust: 100%;

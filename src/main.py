@@ -9,7 +9,7 @@ import time
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import webview
-from AppKit import NSApp
+from AppKit import NSApp, NSUserDefaults
 from pynput import keyboard
 
 from application.use_cases.clipboard_use_case import ClipboardUseCase
@@ -88,6 +88,7 @@ class API:
         return {
             "sound_enabled": AppConstants.SOUND["ENABLED"],
             "show_stats": AppConstants.UI_SETTINGS["SHOW_STATS"],
+            "appearance": AppConstants.UI_SETTINGS["APPEARANCE"],
             "cleanup_strategy": AppConstants.CLIPBOARD["CLEANUP_STRATEGY"],
             "cleanup_value": AppConstants.CLIPBOARD["CLEANUP_VALUE"],
         }
@@ -97,6 +98,8 @@ class API:
             AppConstants.SOUND["ENABLED"] = data["sound_enabled"]
         if "show_stats" in data:
             AppConstants.UI_SETTINGS["SHOW_STATS"] = data["show_stats"]
+        if "appearance" in data:
+            AppConstants.UI_SETTINGS["APPEARANCE"] = data["appearance"]
         if "cleanup_strategy" in data:
             AppConstants.CLIPBOARD["CLEANUP_STRATEGY"] = data["cleanup_strategy"]
         if "cleanup_value" in data:
@@ -107,6 +110,16 @@ class API:
 
         save_settings()
         return {"success": True}
+
+    def get_system_appearance(self):
+        defaults = NSUserDefaults.standardUserDefaults()
+        style = defaults.stringForKey_("AppleInterfaceStyle")
+        return "dark" if style == "Dark" else "light"
+
+
+    def force_sync(self):
+        success = self.use_case.sync()
+        return {"success": success}
 
     def login(self, data):
         return {"success": True, "user": {"email": data["email"]}}
@@ -156,6 +169,14 @@ def hot_reload(window):
                     window.evaluate_js("location.reload()")
 
 
+def auto_sync_task(use_case):
+    while True:
+        if AppConstants.SYNC["AUTO_SYNC"]:
+            logger.info("Auto-syncing...")
+            use_case.sync()
+        time.sleep(AppConstants.SYNC["INTERVAL_SECONDS"])
+
+
 def setup_global_shortcut(window):
     def on_activate():
         logger.info("Global Hotkey Activated")
@@ -184,10 +205,12 @@ def save_settings():
         settings = {
             "sound_enabled": AppConstants.SOUND["ENABLED"],
             "show_stats": AppConstants.UI_SETTINGS["SHOW_STATS"],
+            "appearance": AppConstants.UI_SETTINGS["APPEARANCE"],
             "cleanup_strategy": AppConstants.CLIPBOARD["CLEANUP_STRATEGY"],
             "cleanup_value": AppConstants.CLIPBOARD["CLEANUP_VALUE"],
             "shortcuts": AppConstants.SHORTCUTS,
         }
+
         with open(path, "w") as f:
             json.dump(settings, f)
     except Exception as e:
@@ -204,10 +227,14 @@ def load_settings():
                     AppConstants.SOUND["ENABLED"] = settings["sound_enabled"]
                 if "show_stats" in settings:
                     AppConstants.UI_SETTINGS["SHOW_STATS"] = settings["show_stats"]
+                if "appearance" in settings:
+                    AppConstants.UI_SETTINGS["APPEARANCE"] = settings["appearance"]
                 if "cleanup_strategy" in settings:
                     AppConstants.CLIPBOARD["CLEANUP_STRATEGY"] = settings["cleanup_strategy"]
                 if "cleanup_value" in settings:
                     AppConstants.CLIPBOARD["CLEANUP_VALUE"] = settings["cleanup_value"]
+                if "auto_sync" in settings:
+                    AppConstants.SYNC["AUTO_SYNC"] = settings["auto_sync"]
                 if "shortcuts" in settings:
                     AppConstants.SHORTCUTS.update(settings["shortcuts"])
         except Exception as e:
@@ -255,6 +282,9 @@ if __name__ == "__main__":
 
     t = threading.Thread(target=monitor_clipboard, args=(window, use_case), daemon=True)
     t.start()
+
+    sync_t = threading.Thread(target=auto_sync_task, args=(use_case,), daemon=True)
+    sync_t.start()
 
     hr = threading.Thread(target=hot_reload, args=(window,), daemon=True)
     hr.start()

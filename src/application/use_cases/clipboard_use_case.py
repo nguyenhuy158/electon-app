@@ -68,3 +68,14 @@ class ClipboardUseCase:
 
     def copy_to_clipboard(self, text):
         return self.clipboard_service.copy_to_clipboard(text)
+
+    def sync(self):
+        """
+        Force sync data with remote repository.
+        Currently simulated.
+        """
+        logger.info("Syncing data...")
+        # In a real app, this would push/pull from a remote API
+        # For now, we just simulate a delay
+        time.sleep(1)
+        return True

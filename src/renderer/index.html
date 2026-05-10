@@ -144,6 +144,22 @@
           </section>
 
           <section class="space-y-3">
+            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1">Synchronization</h3>
+            <div class="bg-surface-soft p-4 rounded-xl border border-hairline space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium" data-i18n="SETTINGS.AUTO_SYNC">Auto-sync</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="sync-toggle" class="sr-only peer">
+                  <div class="w-11 h-6 bg-canvas border border-hairline peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-mute after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent peer-checked:after:bg-white"></div>
+                </label>
+              </div>
+              <button id="force-sync-btn" class="btn-primary w-full shadow-sm" data-i18n="SETTINGS.FORCE_SYNC">
+                Sync Now
+              </button>
+            </div>
+          </section>
+
+          <section class="space-y-3">
             <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1" data-i18n="SETTINGS.GLOBAL_SHORTCUT">Global Shortcut</h3>
             <div class="space-y-3">
               <div>
@@ -199,6 +215,20 @@
                 <input type="checkbox" id="stats-toggle" class="sr-only peer">
                 <div class="w-11 h-6 bg-canvas border border-hairline peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-mute after:border-hairline after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent peer-checked:after:bg-white"></div>
               </label>
+            </div>
+          </section>
+
+          <section class="space-y-3">
+            <h3 class="text-[11px] font-bold uppercase text-mute tracking-wider px-1" data-i18n="SETTINGS.APPEARANCE">Appearance</h3>
+            <div class="bg-surface-soft p-4 rounded-xl border border-hairline">
+              <div class="flex items-center justify-between">
+                <span class="text-sm" data-i18n="SETTINGS.APPEARANCE">Theme</span>
+                <select id="appearance-select" class="settings-input settings-select min-w-[120px]">
+                  <option value="light" data-i18n="SETTINGS.THEME_LIGHT">Light</option>
+                  <option value="dark" data-i18n="SETTINGS.THEME_DARK">Dark</option>
+                  <option value="system" data-i18n="SETTINGS.THEME_SYSTEM">System</option>
+                </select>
+              </div>
             </div>
           </section>
 
@@ -316,7 +346,8 @@
         quit: () => window.pywebview ? window.pywebview.api.quit() : Promise.resolve(true),
         login: (d) => window.pywebview ? window.pywebview.api.login(d) : Promise.resolve({ success: true }),
         register: (d) => window.pywebview ? window.pywebview.api.register(d) : Promise.resolve({ success: true }),
-        logout: () => window.pywebview ? window.pywebview.api.logout() : Promise.resolve(true)
+        logout: () => window.pywebview ? window.pywebview.api.logout() : Promise.resolve(true),
+        forceSync: () => window.pywebview ? window.pywebview.api.force_sync() : Promise.resolve({ success: true })
       };
 
       window.addEventListener('pywebviewready', () => {
@@ -341,7 +372,8 @@
           },
           login: (d) => pyApi.login(d),
           register: (d) => pyApi.register(d),
-          logout: () => pyApi.logout()
+          logout: () => pyApi.logout(),
+          forceSync: () => pyApi.force_sync()
         };
         loadData();
       });
@@ -364,6 +396,22 @@
         }
         
         return date.toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      };
+
+      const applyTheme = async (theme) => {
+        const root = document.documentElement;
+        let effectiveTheme = theme;
+        
+        if (theme === 'system') {
+          const systemTheme = await window.api.getSystemAppearance();
+          effectiveTheme = systemTheme;
+        }
+        
+        if (effectiveTheme === 'dark') {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
       };
 
       const translate = (key, params = {}) => {
@@ -396,8 +444,10 @@
         syncStatusDisplay = document.getElementById('sync-status');
       const soundToggle = document.getElementById('sound-toggle'),
         statsToggle = document.getElementById('stats-toggle'),
+        appearanceSelect = document.getElementById('appearance-select'),
         cleanupStrategy = document.getElementById('cleanup-strategy'),
         cleanupValue = document.getElementById('cleanup-value');
+
       const shortcutInput = document.getElementById('shortcut-input'),
         pinShortcutInput = document.getElementById('pin-shortcut-input'),
         saveShortcutBtn = document.getElementById('save-shortcut-btn'),
@@ -571,161 +621,15 @@
             );
           }
         }
-      });
-
-      settingsToggle.onclick = () => {
-        historyView.classList.add('hidden');
-        settingsView.classList.remove('hidden');
-        settingsToggle.classList.add('hidden');
-        helpToggle.classList.add('hidden');
-        minimizeBtn.classList.add('hidden');
-        quitBtn.classList.add('hidden');
-      };
-      settingsBack.onclick = () => {
-        settingsView.classList.add('hidden');
-        historyView.classList.remove('hidden');
-        settingsToggle.classList.remove('hidden');
-        helpToggle.classList.remove('hidden');
-        minimizeBtn.classList.remove('hidden');
-        quitBtn.classList.remove('hidden');
-      };
-      helpToggle.onclick = () => helpView.classList.toggle('hidden');
-      minimizeBtn.onclick = () => window.api.minimize();
-      quitBtn.onclick = () => window.api.quit();
-      authTriggerBtn.onclick = () => authForm.classList.remove('hidden');
-      authBack.onclick = () => authForm.classList.add('hidden');
-      helpClose.onclick = () => helpView.classList.add('hidden');
-      helpView.onclick = (e) => {
-        if (e.target === helpView) helpView.classList.add('hidden');
       };
 
-      window.api.onHistoryUpdate((h) => {
-        fullHistory = h;
-        renderHistory(searchInput.value);
-      });
-      window.api.onFocusSearch(() => {
-        searchInput.focus();
-        searchInput.select();
-      });
-
-      const loadData = async () => {
-        try {
-          i18n = await window.api.getTranslations();
-
-          document.querySelectorAll('[data-i18n]').forEach(el => {
-            el.innerText = translate(el.getAttribute('data-i18n'));
-          });
-          document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            el.placeholder = translate(el.getAttribute('data-i18n-placeholder'));
-          });
-          document.querySelectorAll('[data-i18n-title]').forEach(el => {
-            el.title = translate(el.getAttribute('data-i18n-title'));
-          });
-          
-          // Special case for HELP.PRESS_TO_CLOSE which has a param
-          const pressToClose = document.querySelector('[data-i18n="HELP.PRESS_TO_CLOSE"]');
-          if (pressToClose) {
-            pressToClose.innerText = translate('HELP.PRESS_TO_CLOSE', { key: '?' });
-          }
-
-          const shortcuts = await window.api.getShortcut();
-          shortcutInput.value = shortcuts.open_picker || '';
-          pinShortcutInput.value = shortcuts.toggle_pin || '';
-
-          const settings = await window.api.getSettings();
-          soundToggle.checked = settings.sound_enabled;
-          statsToggle.checked = settings.show_stats;
-          cleanupStrategy.value = settings.cleanup_strategy || 'limit';
-          cleanupValue.value = settings.cleanup_value || 100;
-          
-          fullHistory = await window.api.getHistory();
-          renderHistory();
-        } catch (e) {
-          console.error("Failed to load data:", e);
+      // Listen for system theme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (appearanceSelect && appearanceSelect.value === 'system') {
+          applyTheme('system');
         }
-      };
-      loadData();
-
-      saveShortcutBtn.onclick = async () => {
-        const openPicker = shortcutInput.value.trim();
-        const togglePin = pinShortcutInput.value.trim();
-        
-        saveShortcutBtn.disabled = true;
-        shortcutStatus.innerText = 'Updating...';
-        
-        const res = await window.api.updateShortcut({ 
-          open_picker: openPicker, 
-          toggle_pin: togglePin 
-        });
-        
-        shortcutStatus.innerText = res.success ? 'Updated!' : 'Error: ' + res.error;
-        shortcutStatus.className =
-          'text-[10px] mt-2 ' + (res.success ? 'text-success' : 'text-danger');
-        
-        setTimeout(() => {
-          shortcutStatus.innerText = '';
-          saveShortcutBtn.disabled = false;
-        }, 2000);
-      };
-
-      soundToggle.onchange = async () => {
-        await window.api.updateSettings({ sound_enabled: soundToggle.checked });
-      };
-
-      statsToggle.onchange = async () => {
-        await window.api.updateSettings({ show_stats: statsToggle.checked });
-        renderHistory(searchInput.value);
-      };
-
-      cleanupStrategy.onchange = async () => {
-        await window.api.updateSettings({ cleanup_strategy: cleanupStrategy.value });
-      };
-
-      cleanupValue.oninput = async () => {
-        if (cleanupValue.value) {
-            await window.api.updateSettings({ cleanup_value: parseInt(cleanupValue.value) });
-        }
-      };
-
-      logoutBtn.onclick = async () => {
-        await window.api.logout();
-        currentUser = null;
-        userEmailDisplay.innerText = 'Guest';
-        syncStatusDisplay.innerText = 'Offline mode: local storage';
-        authTriggerBtn.classList.remove('hidden');
-        logoutBtn.classList.add('hidden');
-        loadData();
-        settingsBack.click();
-      };
-
-      toggleLink.onclick = () => {
-        isLogin = !isLogin;
-        formTitle.innerText = isLogin ? 'Login' : 'Register';
-        submitBtn.innerText = isLogin ? 'Login' : 'Register';
-        toggleLink.innerText = isLogin ? '[+] No account? Register' : '[+] Have account? Login';
-      };
-
-      submitBtn.onclick = async () => {
-        const email = document.getElementById('email').value,
-          pass = document.getElementById('password').value;
-        status.classList.remove('hidden');
-        status.innerText = 'Processing...';
-        const res = isLogin
-          ? await window.api.login({ email, password: pass })
-          : await window.api.register({ email, password: pass });
-        if (res.success) {
-          currentUser = res.user;
-          authForm.classList.add('hidden');
-          userEmailDisplay.innerText = res.user.email;
-          syncStatusDisplay.innerText = 'Cloud sync active';
-          authTriggerBtn.classList.add('hidden');
-          logoutBtn.classList.remove('hidden');
-          loadData();
-        } else {
-          status.innerText = 'Error: ' + res.error;
-          status.classList.add('text-danger');
-        }
-      };
+      });
     </script>
+
   </body>
 </html>

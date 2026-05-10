@@ -18,6 +18,10 @@ class AppConstants:
         "LOCAL_PATH": "~/.quickclip/clips.json",
         "SETTINGS_PATH": "~/.quickclip/settings.json",
     }
+    SYNC = {
+        "AUTO_SYNC": True,
+        "INTERVAL_SECONDS": 300,  # 5 minutes
+    }
     SHORTCUTS = {"OPEN_PICKER": "<cmd>+<shift>+v", "TOGGLE_PIN": "Control+Enter"}
     SOUND = {"ENABLED": True}
     UI_SETTINGS = {"SHOW_STATS": True}
