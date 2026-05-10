@@ -1,12 +1,16 @@
 import { app, Tray, Menu, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
+import 'dotenv/config';
 import { initDb, pool } from './db';
+import { APP_CONSTANTS } from './domain/constants';
+import { i18n } from './domain/i18n';
 
 // Infrastructure Adapters
 import { PostgresUserRepository } from './infrastructure/adapters/PostgresUserRepository';
 import { PostgresClipboardRepository } from './infrastructure/adapters/PostgresClipboardRepository';
 import { ElectronClipboardService } from './infrastructure/adapters/ElectronClipboardService';
 import { ElectronNotificationService } from './infrastructure/adapters/ElectronNotificationService';
+import { WinstonLogger } from './infrastructure/adapters/WinstonLogger';
 
 // Use Cases
 import { AuthUseCase } from './application/use-cases/AuthUseCase';
@@ -17,6 +21,7 @@ let mainWindow: BrowserWindow | null = null;
 let lastClip: string = '';
 
 // Dependency Injection
+const logger = new WinstonLogger();
 const userRepository = new PostgresUserRepository(pool);
 const clipboardRepository = new PostgresClipboardRepository(pool);
 const clipboardService = new ElectronClipboardService();
@@ -30,12 +35,14 @@ const clipboardUseCase = new ClipboardUseCase(
 );
 
 async function startup() {
+  logger.info('Starting QuickClip...');
   try {
     if (process.env.DATABASE_URL) {
       await initDb();
+      logger.info('Database initialized');
     }
   } catch (err) {
-    console.error('Failed to init DB:', err);
+    logger.error('Failed to init DB', err);
   }
 
   createTray();
@@ -45,8 +52,8 @@ async function startup() {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 400,
-    height: 600,
+    width: APP_CONSTANTS.UI.WINDOW_WIDTH,
+    height: APP_CONSTANTS.UI.WINDOW_HEIGHT,
     show: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -59,7 +66,7 @@ function createWindow() {
 }
 
 function createTray() {
-  tray = new Tray(path.join(__dirname, '../icon.png'));
+  tray = new Tray(path.join(__dirname, APP_CONSTANTS.UI.TRAY_ICON_PATH));
   updateTrayMenu();
 }
 
@@ -68,7 +75,7 @@ function updateTrayMenu() {
 
   const history = clipboardUseCase.getHistory();
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'QuickClip', enabled: false },
+    { label: i18n.APP.NAME, enabled: false },
     { type: 'separator' },
     ...history.map((text) => ({
       label: text.length > 30 ? text.substring(0, 27) + '...' : text,
@@ -77,16 +84,16 @@ function updateTrayMenu() {
       },
     })),
     { type: 'separator' },
-    { label: 'Show App', click: () => mainWindow?.show() },
+    { label: i18n.TRAY.SHOW_APP, click: () => mainWindow?.show() },
     {
-      label: 'Clear History',
+      label: i18n.TRAY.CLEAR_HISTORY,
       click: () => {
         clipboardUseCase.clearHistory();
         updateTrayMenu();
       },
     },
     { type: 'separator' },
-    { label: 'Quit', click: () => app.quit() },
+    { label: i18n.TRAY.QUIT, click: () => app.quit() },
   ]);
   tray.setContextMenu(contextMenu);
 }
@@ -98,7 +105,7 @@ function startClipboardPolling() {
       lastClip = text;
       await clipboardUseCase.addClip(text, () => updateTrayMenu());
     }
-  }, 1000);
+  }, APP_CONSTANTS.CLIPBOARD.POLLING_INTERVAL_MS);
 }
 
 // IPC Handlers for Auth
