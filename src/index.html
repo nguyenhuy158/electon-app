@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+  <head>
+    <title>QuickClip Sync</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        padding: 20px;
+        background: #f4f4f9;
+      }
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        font-size: 1.5rem;
+        color: #333;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background: #007aff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .toggle {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 0.9rem;
+        color: #666;
+        cursor: pointer;
+      }
+      #status {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 4px;
+        display: none;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="auth-form">
+      <h1 id="form-title">Login to QuickClip</h1>
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button id="submit-btn">Login</button>
+      <div class="toggle" id="toggle-link">Don't have an account? Register</div>
+      <div id="status"></div>
+    </div>
+
+    <div class="container" id="user-info" style="display: none">
+      <h1>Welcome!</h1>
+      <p>Sync is active for: <strong id="user-email"></strong></p>
+      <p>Your clipboard history is now backed up to Neon PostgreSQL.</p>
+      <button onclick="location.reload()">Logout</button>
+    </div>
+
+    <script>
+      let isLogin = true;
+      const formTitle = document.getElementById('form-title');
+      const submitBtn = document.getElementById('submit-btn');
+      const toggleLink = document.getElementById('toggle-link');
+      const status = document.getElementById('status');
+
+      toggleLink.onclick = () => {
+        isLogin = !isLogin;
+        formTitle.innerText = isLogin ? 'Login to QuickClip' : 'Register for QuickClip';
+        submitBtn.innerText = isLogin ? 'Login' : 'Register';
+        toggleLink.innerText = isLogin
+          ? "Don't have an account? Register"
+          : 'Already have an account? Login';
+      };
+
+      submitBtn.onclick = async () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        status.style.display = 'block';
+        status.innerText = 'Processing...';
+        status.className = '';
+
+        const result = isLogin
+          ? await window.api.login({ email, password })
+          : await window.api.register({ email, password });
+
+        if (result.success) {
+          document.getElementById('auth-form').style.display = 'none';
+          document.getElementById('user-info').style.display = 'block';
+          document.getElementById('user-email').innerText = result.user.email;
+        } else {
+          status.innerText = 'Error: ' + result.error;
+          status.className = 'error';
+        }
+      };
+    </script>
+  </body>
+</html>
