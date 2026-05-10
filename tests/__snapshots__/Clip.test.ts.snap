@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Clip Model should match snapshot 1`] = `
+Clip {
+  "content": "snapshot content",
+  "createdAt": 2026-05-10T10:00:00.000Z,
+  "id": "snap-1",
+  "userId": "user-snap",
+}
+`;

@@ -3,35 +3,79 @@ import { UserRepository } from '../src/application/ports/UserRepository';
 import { User } from '../src/domain/models/User';
 import { i18n } from '../src/domain/i18n';
 
+jest.mock('@neondatabase/auth', () => ({
+  createAuthClient: jest.fn(() => ({
+    signUp: { email: jest.fn() },
+    signIn: { email: jest.fn() },
+  })),
+}));
+
+import { createAuthClient } from '@neondatabase/auth';
+
 describe('AuthUseCase', () => {
   let mockRepo: jest.Mocked<UserRepository>;
   let useCase: AuthUseCase;
+  let mockClient: any;
+  const originalEnv = process.env;
 
   beforeEach(() => {
+    jest.clearAllMocks();
+    process.env = { ...originalEnv };
+
     mockRepo = {
       findByEmail: jest.fn(),
       findById: jest.fn(),
       create: jest.fn(),
     } as any;
 
+    mockClient = {
+      signUp: { email: jest.fn() },
+      signIn: { email: jest.fn() },
+    };
+
+    (createAuthClient as jest.Mock).mockReturnValue(mockClient);
+
     process.env.NEON_AUTH_URL = 'https://test.neonauth.us-east-2.aws.neon.build/neondb/auth';
     useCase = new AuthUseCase(mockRepo);
+  });
 
-    // Inject mock client directly to avoid real network calls or SDK logic
-    (useCase as any).client = {
-      signUp: {
-        email: jest.fn(),
-      },
-      signIn: {
-        email: jest.fn(),
-      },
-    };
+  afterAll(() => {
+    process.env = originalEnv;
+  });
+
+  describe('constructor', () => {
+    it('should NOT call initClient if URL is missing', () => {
+      delete process.env.NEON_AUTH_URL;
+      const spy = jest.spyOn(AuthUseCase.prototype as any, 'initClient');
+      new AuthUseCase(mockRepo);
+      expect(spy).not.toHaveBeenCalled();
+      spy.mockRestore();
+    });
+  });
+
+  describe('initClient', () => {
+    it('should log error if URL is empty', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      (useCase as any).initClient('');
+      expect(consoleSpy).toHaveBeenCalledWith(i18n.AUTH.URL_NOT_CONFIG);
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle initialization error in doInit', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      (createAuthClient as jest.Mock).mockImplementationOnce(() => {
+        throw new Error('Init failure');
+      });
+      (useCase as any).doInit('some-url');
+      expect(consoleSpy).toHaveBeenCalledWith(i18n.AUTH.CLIENT_NOT_INIT, expect.any(Error));
+      consoleSpy.mockRestore();
+    });
   });
 
   describe('register', () => {
     it('should register and sync user to local DB', async () => {
       const neonUser = { id: 'neon_id', email: 'test@example.com' };
-      ((useCase as any).client.signUp.email as jest.Mock).mockResolvedValue({
+      mockClient.signUp.email.mockResolvedValue({
         data: { user: neonUser },
         error: null,
       });
@@ -43,8 +87,20 @@ describe('AuthUseCase', () => {
       expect(mockRepo.create).toHaveBeenCalledWith({ id: 'neon_id', email: 'test@example.com' });
     });
 
+    it('should initialize client if missing during registration', async () => {
+      delete process.env.NEON_AUTH_URL;
+      const localUseCase = new AuthUseCase(mockRepo);
+      process.env.NEON_AUTH_URL = 'https://retry.url';
+
+      mockClient.signUp.email.mockResolvedValue({ data: { user: { id: '1', email: 't@t.com' } } });
+      mockRepo.create.mockResolvedValue(new User({ id: '1', email: 't@t.com' }));
+
+      await localUseCase.register('t@t.com', 'p');
+      expect((localUseCase as any).client).toBe(mockClient);
+    });
+
     it('should return error if registration fails', async () => {
-      ((useCase as any).client.signUp.email as jest.Mock).mockResolvedValue({
+      mockClient.signUp.email.mockResolvedValue({
         data: null,
         error: { message: 'Email already exists' },
       });
@@ -54,12 +110,39 @@ describe('AuthUseCase', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBe('Email already exists');
     });
+
+    it('should handle registration failure without message', async () => {
+      mockClient.signUp.email.mockResolvedValue({
+        data: null,
+        error: {},
+      });
+
+      const result = await useCase.register('test@example.com', 'pass123');
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe(i18n.AUTH.REGISTRATION_FAILED);
+    });
+
+    it('should handle registration exception', async () => {
+      mockClient.signUp.email.mockRejectedValue(new Error('Sign up error'));
+      const result = await useCase.register('test@example.com', 'pass123');
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Sign up error');
+    });
+
+    it('should return error if client remains null', async () => {
+      (useCase as any).client = null;
+      process.env.NEON_AUTH_URL = '';
+      const result = await useCase.register('test@example.com', 'pass123');
+      expect(result.success).toBe(false);
+      expect(result.error).toBe(i18n.AUTH.CLIENT_NOT_INIT);
+    });
   });
 
   describe('login', () => {
     it('should login and sync user if not in local DB', async () => {
       const neonUser = { id: 'neon_id', email: 'test@example.com' };
-      ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
+      mockClient.signIn.email.mockResolvedValue({
         data: { user: neonUser },
         error: null,
       });
@@ -73,9 +156,21 @@ describe('AuthUseCase', () => {
       expect(mockRepo.create).toHaveBeenCalled();
     });
 
-    it('should login and use existing local user', async () => {
+    it('should initialize client if missing during login', async () => {
+      delete process.env.NEON_AUTH_URL;
+      const localUseCase = new AuthUseCase(mockRepo);
+      process.env.NEON_AUTH_URL = 'https://retry.url';
+
+      mockClient.signIn.email.mockResolvedValue({ data: { user: { id: '1', email: 't@t.com' } } });
+      mockRepo.findById.mockResolvedValue(new User({ id: '1', email: 't@t.com' }));
+
+      await localUseCase.login('t@t.com', 'p');
+      expect((localUseCase as any).client).toBe(mockClient);
+    });
+
+    it('should use existing local user', async () => {
       const neonUser = { id: 'neon_id', email: 'test@example.com' };
-      ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
+      mockClient.signIn.email.mockResolvedValue({
         data: { user: neonUser },
         error: null,
       });
@@ -88,7 +183,7 @@ describe('AuthUseCase', () => {
     });
 
     it('should return error if login fails', async () => {
-      ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
+      mockClient.signIn.email.mockResolvedValue({
         data: null,
         error: { message: 'Invalid credentials' },
       });
@@ -99,44 +194,8 @@ describe('AuthUseCase', () => {
       expect(result.error).toBe('Invalid credentials');
     });
 
-    it('should return error if exception occurs during login', async () => {
-      ((useCase as any).client.signIn.email as jest.Mock).mockRejectedValue(
-        new Error('Network error')
-      );
-
-      const result = await useCase.login('test@example.com', 'pass123');
-
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Network error');
-    });
-  });
-
-  describe('initialization and registration errors', () => {
-    it('should handle registration exception', async () => {
-      ((useCase as any).client.signUp.email as jest.Mock).mockRejectedValue(
-        new Error('Sign up error')
-      );
-
-      const result = await useCase.register('test@example.com', 'pass123');
-
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('Sign up error');
-    });
-
-    it('should handle registration failure without message', async () => {
-      ((useCase as any).client.signUp.email as jest.Mock).mockResolvedValue({
-        data: null,
-        error: {},
-      });
-
-      const result = await useCase.register('test@example.com', 'pass123');
-
-      expect(result.success).toBe(false);
-      expect(result.error).toBe(i18n.AUTH.REGISTRATION_FAILED);
-    });
-
     it('should handle login failure without message', async () => {
-      ((useCase as any).client.signIn.email as jest.Mock).mockResolvedValue({
+      mockClient.signIn.email.mockResolvedValue({
         data: null,
         error: {},
       });
@@ -147,22 +206,17 @@ describe('AuthUseCase', () => {
       expect(result.error).toBe(i18n.AUTH.LOGIN_FAILED);
     });
 
-    it('should return error if client is not initialized during registration', async () => {
-      (useCase as any).client = null;
-      process.env.NEON_AUTH_URL = ''; // Ensure initClient fails or doesn't set client
-
-      const result = await useCase.register('test@example.com', 'pass123');
-
+    it('should handle login exception', async () => {
+      mockClient.signIn.email.mockRejectedValue(new Error('Network error'));
+      const result = await useCase.login('test@example.com', 'pass123');
       expect(result.success).toBe(false);
-      expect(result.error).toBe(i18n.AUTH.CLIENT_NOT_INIT);
+      expect(result.error).toBe('Network error');
     });
 
-    it('should return error if client is not initialized during login', async () => {
+    it('should return error if client remains null', async () => {
       (useCase as any).client = null;
       process.env.NEON_AUTH_URL = '';
-
       const result = await useCase.login('test@example.com', 'pass123');
-
       expect(result.success).toBe(false);
       expect(result.error).toBe(i18n.AUTH.CLIENT_NOT_INIT);
     });

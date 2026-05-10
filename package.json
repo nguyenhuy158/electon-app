@@ -7,6 +7,7 @@
     "start": "electron .",
     "build": "tsc && npx tailwindcss -i ./src/styles.css -o ./dist/styles.css && cp src/index.html dist/",
     "test": "jest",
+    "test:watch": "jest --watch",
     "lint": "eslint .",
     "format": "prettier --write .",
     "coverage": "jest --coverage",

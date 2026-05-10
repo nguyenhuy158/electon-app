@@ -1,4 +1,4 @@
-.PHONY: help install start test clean i s t c lint format coverage l f cov sc
+.PHONY: help install start test clean i s t c lint format coverage l f cov sc tw w
 
 # Default target
 help:
@@ -8,6 +8,7 @@ help:
 	@echo "  install  (i)   Install dependencies"
 	@echo "  start    (s)   Start the application"
 	@echo "  test     (t)   Run tests"
+	@echo "  test-watch (tw/w) Run tests in watch mode"
 	@echo "  lint     (l)   Lint code"
 	@echo "  format   (f)   Format code"
 	@echo "  coverage (cov) Run tests with coverage"
@@ -24,6 +25,8 @@ l: lint
 f: format
 cov: coverage
 sc: serve-cov
+tw: test-watch
+w: test-watch
 
 # Install dependencies
 install:
@@ -40,6 +43,10 @@ build:
 # Run tests
 test:
 	pnpm test
+
+# Run tests in watch mode
+test-watch:
+	pnpm run test:watch
 
 # Lint code
 lint:

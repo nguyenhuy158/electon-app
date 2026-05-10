@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`User Model should match snapshot 1`] = `
+User {
+  "createdAt": undefined,
+  "email": "snap@quickclip.com",
+  "id": "user-id-snap",
+  "password": undefined,
+}
+`;

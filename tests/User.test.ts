@@ -6,4 +6,9 @@ describe('User Model', () => {
     expect(user.id).toBe('uuid-123');
     expect(user.email).toBe('test@example.com');
   });
+
+  it('should match snapshot', () => {
+    const user = new User({ id: 'user-id-snap', email: 'snap@quickclip.com' });
+    expect(user).toMatchSnapshot();
+  });
 });

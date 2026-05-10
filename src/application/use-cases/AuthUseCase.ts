@@ -1,3 +1,4 @@
+import { createAuthClient } from '@neondatabase/auth';
 import { UserRepository } from '../ports/UserRepository';
 import { i18n } from '../../domain/i18n';
 
@@ -11,7 +12,7 @@ export class AuthUseCase {
     }
   }
 
-  private async initClient(url: string) {
+  private initClient(url: string) {
     if (!url) {
       console.error(i18n.AUTH.URL_NOT_CONFIG);
       return;
@@ -19,12 +20,10 @@ export class AuthUseCase {
     this.doInit(url);
   }
 
-  private async doInit(url: string) {
+  private doInit(url: string) {
     console.log('Initializing Neon Auth with URL:', url);
     try {
-      const authPkg = await import('@neondatabase/auth');
-      const client = authPkg.createAuthClient(url);
-      this.client = client;
+      this.client = createAuthClient(url);
     } catch (e) {
       console.error(i18n.AUTH.CLIENT_NOT_INIT, e);
     }

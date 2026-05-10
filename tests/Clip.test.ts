@@ -20,4 +20,14 @@ describe('Clip Model', () => {
     const clip = new Clip({ userId: '1', content: 'no date' });
     expect(clip.createdAt).toBeInstanceOf(Date);
   });
+
+  it('should match snapshot', () => {
+    const clip = new Clip({
+      id: 'snap-1',
+      userId: 'user-snap',
+      content: 'snapshot content',
+      createdAt: new Date('2026-05-10T10:00:00Z'),
+    });
+    expect(clip).toMatchSnapshot();
+  });
 });
