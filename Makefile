@@ -56,9 +56,15 @@ build: build-ui
 	@echo "Building for macOS..."
 	uv pip install pyinstaller
 	./.venv/bin/pyinstaller --noconfirm --onefile --windowed --name "QuickClip" \
+		--icon "icon.png" \
 		--add-data "src/renderer/index.html:src/renderer" \
 		--add-data "src/renderer/styles.css:src/renderer" \
+		--add-data "icon.png:." \
 		src/main/index.py
+	@echo "Creating DMG..."
+	rm -f dist/QuickClip.dmg
+	hdiutil create -volname "QuickClip" -srcfolder dist/QuickClip.app -ov -format UDZO dist/QuickClip.dmg
+	@echo "DMG created at dist/QuickClip.dmg"
 
 clean:
 	rm -rf build dist *.spec .venv src/renderer/styles.css htmlcov

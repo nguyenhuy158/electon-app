@@ -80,6 +80,7 @@ if __name__ == "__main__":
 
     api = API()
     index_path = get_resource_path("src/renderer/index.html")
+    icon_path = get_resource_path(AppConstants.UI["ICON_PATH"])
 
     window = webview.create_window(
         AppConstants.UI["TITLE"],
@@ -89,6 +90,7 @@ if __name__ == "__main__":
         height=AppConstants.UI["WINDOW_HEIGHT"],
         resizable=True,
         min_size=(AppConstants.UI["MIN_WIDTH"], AppConstants.UI["MIN_HEIGHT"]),
+        icon=icon_path,
     )
 
     t = threading.Thread(target=monitor_clipboard, args=(window, api), daemon=True)

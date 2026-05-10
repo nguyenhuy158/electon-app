@@ -5,6 +5,7 @@ class AppConstants:
         "TITLE": "QuickClip Sync",
         "MIN_WIDTH": 300,
         "MIN_HEIGHT": 400,
+        "ICON_PATH": "icon.png",
     }
     CLIPBOARD = {"POLLING_INTERVAL_MS": 1000, "DEFAULT_HISTORY_LIMIT": 10}
     STORAGE = {"LOCAL_PATH": "~/.quickclip/clips.json"}
