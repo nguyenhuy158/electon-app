@@ -257,53 +257,66 @@ def load_settings():
 
 
 if __name__ == "__main__":
-    # Setup Logging
-    log_file = os.path.expanduser(AppConstants.LOGGING["LOG_FILE"])
-    log_dir = os.path.dirname(log_file)
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
+    try:
+        # Setup Logging
+        log_file = os.path.expanduser(AppConstants.LOGGING["LOG_FILE"])
+        log_dir = os.path.dirname(log_file)
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
 
-    log_level = os.environ.get("QUICKCLIP_LOG_LEVEL", AppConstants.LOGGING["DEFAULT_LEVEL"])
-    logging.basicConfig(
-        level=log_level,
-        format=AppConstants.LOGGING["FORMAT"],
-        handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stdout)],
-    )
-    logger.info(f"Starting QuickClip with log level: {log_level}")
+        log_level = os.environ.get("QUICKCLIP_LOG_LEVEL", AppConstants.LOGGING["DEFAULT_LEVEL"])
+        logging.basicConfig(
+            level=log_level,
+            format=AppConstants.LOGGING["FORMAT"],
+            handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stdout)],
+        )
+        logger.info(f"Starting QuickClip with log level: {log_level}")
 
-    # Load persisted settings
-    load_settings()
+        # Load persisted settings
+        load_settings()
 
-    # Dependency Injection
-    clipboard_service = MacOSClipboardService()
-    clipboard_repository = JSONClipboardRepository()
-    use_case = ClipboardUseCase(clipboard_service, clipboard_repository)
-    api = API(use_case)
+        # Dependency Injection
+        clipboard_service = MacOSClipboardService()
+        clipboard_repository = JSONClipboardRepository()
+        use_case = ClipboardUseCase(clipboard_service, clipboard_repository)
+        api = API(use_case)
 
-    index_path = get_resource_path("src/renderer/index.html")
+        index_path = get_resource_path("src/renderer/index.html")
+        logger.info(f"Loading index from: {index_path}")
 
-    window = webview.create_window(
-        AppConstants.UI["TITLE"],
-        index_path,
-        js_api=api,
-        width=AppConstants.UI["WINDOW_WIDTH"],
-        height=AppConstants.UI["WINDOW_HEIGHT"],
-        resizable=True,
-        frameless=True,
-        easy_drag=True,
-        min_size=(AppConstants.UI["MIN_WIDTH"], AppConstants.UI["MIN_HEIGHT"]),
-    )
-    api.set_window(window)
+        window = webview.create_window(
+            AppConstants.UI["TITLE"],
+            index_path,
+            js_api=api,
+            width=AppConstants.UI["WINDOW_WIDTH"],
+            height=AppConstants.UI["WINDOW_HEIGHT"],
+            resizable=True,
+            frameless=True,
+            easy_drag=True,
+            min_size=(AppConstants.UI["MIN_WIDTH"], AppConstants.UI["MIN_HEIGHT"]),
+        )
+        api.set_window(window)
 
-    t = threading.Thread(target=monitor_clipboard, args=(window, use_case), daemon=True)
-    t.start()
+        t = threading.Thread(target=monitor_clipboard, args=(window, use_case), daemon=True)
+        t.start()
 
-    sync_t = threading.Thread(target=auto_sync_task, args=(window, use_case), daemon=True)
-    sync_t.start()
+        sync_t = threading.Thread(target=auto_sync_task, args=(window, use_case), daemon=True)
+        sync_t.start()
 
-    hr = threading.Thread(target=hot_reload, args=(window,), daemon=True)
-    hr.start()
+        hr = threading.Thread(target=hot_reload, args=(window,), daemon=True)
+        hr.start()
 
-    setup_global_shortcut(window)
+        setup_global_shortcut(window)
 
-    webview.start(debug=True)
+        # Disable debug in production
+        is_prod = hasattr(sys, "_MEIPASS")
+        webview.start(debug=not is_prod)
+    except Exception as e:
+        if 'logger' in locals():
+            logger.exception("Fatal error during startup")
+        else:
+            with open(os.path.expanduser("~/.quickclip/crash.log"), "a") as f:
+                import traceback
+                f.write(f"\n{time.ctime()}: {str(e)}\n")
+                f.write(traceback.format_exc())
+        raise

@@ -61,7 +61,7 @@ sc:
 build: build-ui
 	@echo "Building for macOS..."
 	uv pip install pyinstaller
-	./.venv/bin/pyinstaller --noconfirm --onefile --windowed --name "QuickClip" \
+	./.venv/bin/pyinstaller --noconfirm --onedir --windowed --name "QuickClip" \
 		--icon "icon.png" \
 		--add-data "src/renderer/index.html:src/renderer" \
 		--add-data "src/renderer/app.js:src/renderer" \
